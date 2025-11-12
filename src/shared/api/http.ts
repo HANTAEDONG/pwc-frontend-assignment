@@ -1,4 +1,8 @@
 import axios from "axios";
+import {
+  setupRequestInterceptor,
+  setupResponseInterceptor,
+} from "./interceptors";
 
 export const httpClient = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_BASE_URL || "",
@@ -7,13 +11,11 @@ export const httpClient = axios.create({
   },
 });
 
-export class AppError extends Error {
-  constructor(
-    message: string,
-    public code?: string,
-    public statusCode?: number
-  ) {
-    super(message);
-    this.name = "AppError";
-  }
-}
+httpClient.interceptors.request.use(setupRequestInterceptor);
+
+httpClient.interceptors.response.use(
+  (response) => response,
+  setupResponseInterceptor
+);
+
+export { AppError, isAppError } from "./AppError";
