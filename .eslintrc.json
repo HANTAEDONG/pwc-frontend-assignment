@@ -1,0 +1,28 @@
+{
+  "extends": ["next/core-web-vitals", "next/typescript"],
+  "rules": {
+    "no-restricted-imports": [
+      "error",
+      {
+        "patterns": [
+          {
+            "group": ["@/features/*", "@/widgets/*", "@/app/*"],
+            "message": "shared layer cannot import from features, widgets, or app"
+          },
+          {
+            "group": ["@/widgets/*", "@/app/*"],
+            "message": "entities layer cannot import from widgets or app"
+          },
+          {
+            "group": ["@/app/*"],
+            "message": "features layer cannot import from app"
+          },
+          {
+            "group": ["@/app/*"],
+            "message": "widgets layer cannot import from app"
+          }
+        ]
+      }
+    ]
+  }
+}
