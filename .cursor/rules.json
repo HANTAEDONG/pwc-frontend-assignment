@@ -1,0 +1,305 @@
+{
+  "version": 1,
+  "project": "PwC FE Assignment — 관심 기업 관리 서비스",
+  "rules": [
+    {
+      "id": "tech-scope",
+      "title": "Tech & Scope",
+      "trigger": "always",
+      "instructions": [
+        "Use Next.js (App Router, RSC preferred), TypeScript, TanStack Query, Zustand, Axios, TailwindCSS, Lucide React.",
+        "Implement CRUD for favorite companies and searchable dropdown for company names.",
+        "Use env NEXT_PUBLIC_API_BASE_URL only. No hard-coded URLs."
+      ]
+    },
+    {
+      "id": "code-style-principles",
+      "title": "Code Style Principles",
+      "trigger": "code_change",
+      "instructions": [
+        "Always prefer semantic markup: form/label/button, table/thead/tbody/tfoot/caption, ul/li, dl/dt/dd, header/nav/main/aside/footer.",
+        "Use ARIA only when semantics cannot express intent; do not overuse aria-*.",
+        "FSD flow: shared(api/http) -> entities(api/queries/types) -> features(hooks/ui) -> widgets(composition) -> app(routing).",
+        "Define server state only in entities (api/queries). Components consume hooks; do not implement server state in features/widgets/app."
+      ]
+    },
+    {
+      "id": "fsd-architecture",
+      "title": "FSD Layered Architecture",
+      "trigger": "code_change",
+      "instructions": [
+        "Layer dependency: shared -> entities -> features -> widgets -> app. No upward imports.",
+        "Server state is defined only in entities/(api|queries). Features/widgets consume hooks only.",
+        "Import aliases: @/shared, @/entities/*, @/features/*, @/widgets/*.",
+        "Default to RSC. Add 'use client' only for interactive parts (forms, dropdowns, focus, query hooks, Zustand)."
+      ]
+    },
+    {
+      "id": "a11y-semantic",
+      "title": "Semantic HTML & A11y",
+      "trigger": "code_change",
+      "instructions": [
+        "Use landmarks: header, nav, main, aside, footer.",
+        "Use section with proper heading levels; article for independent content.",
+        "Use ul/li for lists, dl/dt/dd for definitions, table with caption/thead/tbody/tfoot for tabular data.",
+        "Use form + label[for]; group controls with fieldset+legend; bind errors via aria-describedby.",
+        "Buttons for actions; anchors for navigation. Use roles/aria only when semantics are insufficient.",
+        "Keep :focus-visible ring; provide a skip link to #main; ensure keyboard navigation (Tab/Shift+Tab/Enter/Escape/Arrows)."
+      ]
+    },
+    {
+      "id": "state-management",
+      "title": "State Management",
+      "trigger": "code_change",
+      "instructions": [
+        "Server state -> TanStack Query with proper keys and invalidate.",
+        "UI/control state -> Zustand (modals, selection, overlay). Do not duplicate server data in Zustand."
+      ]
+    },
+    {
+      "id": "mutation-pattern",
+      "title": "Mutation Pattern (React Query)",
+      "trigger": "code_change",
+      "instructions": [
+        "onMutate: take snapshot and apply optimistic update.",
+        "onError: rollback to snapshot.",
+        "onSettled: invalidate related query keys to re-sync."
+      ]
+    },
+    {
+      "id": "data-layer",
+      "title": "Data Layer",
+      "trigger": "code_change",
+      "instructions": [
+        "shared/api/http.ts defines Axios instance, interceptors, timeout, and error mapping to AppError.",
+        "entities/**/api.ts contains domain API functions validated by zod schemas.",
+        "Example query keys: ['favorite','list'], ['favorite','detail',id], ['company','search',keyword]."
+      ]
+    },
+    {
+      "id": "searchable-dropdown",
+      "title": "Searchable Dropdown Rules",
+      "trigger": "code_change",
+      "instructions": [
+        "Debounce input by 300ms; use keepPreviousData=true when paging.",
+        "Support keyboard navigation: ArrowUp/ArrowDown, Enter to commit, Escape to close.",
+        "Either use proper combobox pattern (role='combobox' with listbox/option and aria-activedescendant) OR a semantic-friendly custom list; avoid excessive ARIA when semantics suffice.",
+        "Do not trap focus; allow free movement."
+      ]
+    },
+    {
+      "id": "ux-rules",
+      "title": "UX Rules",
+      "trigger": "code_change",
+      "instructions": [
+        "CRUD uses optimistic update -> rollback on failure -> invalidate on settled.",
+        "Render explicit states: loading / empty / error / success with consistent toast or inline feedback.",
+        "Ensure keyboard operability and visible focus at all interactive points."
+      ]
+    },
+    {
+      "id": "ui-tailwind",
+      "title": "UI & Tailwind",
+      "trigger": "code_change",
+      "instructions": [
+        "Promote repeated utility bundles to shared/ui (Button, Input, Combobox, Table, Modal).",
+        "Maintain :focus-visible ring; do not rely on hover-only interactions.",
+        "Class order: layout -> box-model -> typography -> visual -> state.",
+        "Maintain dark-mode contrast; use Lucide icon sizes 16/20/24."
+      ]
+    },
+    {
+      "id": "naming-conventions",
+      "title": "File & Naming Conventions",
+      "trigger": "code_change",
+      "instructions": [
+        "Folders use kebab-case.",
+        "Files use feature+role (e.g., company-form.tsx, favorite-table.tsx).",
+        "Types prefixed with T* (e.g., TCompany).",
+        "Zod schemas suffixed with *Schema.",
+        "Query key constants suffixed with *QueryKeys."
+      ]
+    },
+    {
+      "id": "errors-logging",
+      "title": "Error Handling & Logging",
+      "trigger": "code_change",
+      "instructions": [
+        "Map API errors to AppError with userMessage vs devMessage.",
+        "Show concise user feedback; detailed logs only in development.",
+        "Remove console.log before commit; no leftover debug statements."
+      ]
+    },
+    {
+      "id": "quality-gates",
+      "title": "Quality Gates",
+      "trigger": "code_change",
+      "instructions": [
+        "Avoid any; use satisfies and as const.",
+        "Stable list keys (id); avoid inline anonymous handlers in hot paths.",
+        "Prefer semantic elements; roles/aria are helpers only.",
+        "Keep components small and composable; self-explanatory naming."
+      ]
+    },
+    {
+      "id": "security-env",
+      "title": "Security & Env",
+      "trigger": "always",
+      "instructions": [
+        "Use NEXT_PUBLIC_API_BASE_URL from .env.local.",
+        "Do not log or hard-code secrets.",
+        "Commit only .env.example; never commit real .env* files."
+      ]
+    },
+    {
+      "id": "cursor-style",
+      "title": "Cursor Behavior",
+      "trigger": "always",
+      "instructions": [
+        "Do not write explanatory comments or file headers in code.",
+        "Remove console.log before commit.",
+        "Prefer small atomic commits; code should be self-explanatory."
+      ]
+    },
+    {
+      "id": "git-flow-branches",
+      "title": "Git Flow Branch Strategy",
+      "trigger": "always",
+      "instructions": [
+        "Protected: main, develop. Never push directly.",
+        "Create work branches from develop: feature/<scope>, fix/<scope>, chore/<name>, docs/<name>, release/<x.y.z>, hotfix/<scope>.",
+        "Open PRs from feature/* and fix/* into develop.",
+        "Release: create release/x.y.z from develop, finalize version and CHANGELOG, PR to main, tag vX.Y.Z, then merge main back into develop.",
+        "Hotfix: branch from main as hotfix/<scope>, PR to main, tag, then merge main back into develop."
+      ]
+    },
+    {
+      "id": "merge-policy",
+      "title": "Merge Policy",
+      "trigger": "pull_request",
+      "instructions": [
+        "Default PR target: develop for feature/* and fix/*.",
+        "Use Squash & Merge for regular PRs.",
+        "Use Merge Commit for release/* and hotfix/* PRs into main to preserve tag anchor.",
+        "Delete merged work branches after merge."
+      ]
+    },
+    {
+      "id": "branch-name-hints",
+      "title": "Branch Name Hints",
+      "trigger": "branch_create",
+      "instructions": [
+        "feature/companies-crud",
+        "feature/companies-searchable-dropdown",
+        "feature/finance-viewer-statements",
+        "fix/finance-table-pagination",
+        "hotfix/api-timeout",
+        "release/1.0.0"
+      ]
+    },
+    {
+      "id": "conventional-commits",
+      "title": "Conventional Commits",
+      "trigger": "commit",
+      "instructions": [
+        "Use types: feat|fix|refactor|perf|chore|ci|build|test|docs|style|revert.",
+        "Use FSD path as scope in lowercase: entities/<name>, features/<name>, widgets/<name>, shared/<name>, app.",
+        "Examples:",
+        "feat(features/company-crud): add searchable dropdown with debounce",
+        "fix(features/finance-viewer): prevent duplicate fetch on infinite scroll",
+        "refactor(shared/api): simplify HttpClient and error mapping",
+        "Link issues in body: Closes #123."
+      ]
+    },
+    {
+      "id": "pr-template-enforcer",
+      "title": "PR Template and Content",
+      "trigger": "pull_request",
+      "instructions": [
+        "PR title must follow: type(scope): summary. Example: feat(companies): searchable dropdown with debounce.",
+        "Ensure .github/PULL_REQUEST_TEMPLATE.md exists. If missing, create with the following content:",
+        "# PULL_REQUEST_TEMPLATE.md",
+        "## 목적 / 배경",
+        "- 무엇을 왜 바꾸는지 한 문단 요약",
+        "## 변경 사항",
+        "- 핵심 변경 요약 (bullet)",
+        "- 스크린샷/영상 첨부",
+        "## FSD 영향",
+        "- layers: app / entities / features / widgets / shared",
+        "- 변경 경로 예: features/company-crud/ui/CompanyForm",
+        "## 테스트 / 확인 방법",
+        "- pnpm i && pnpm test",
+        "- 수동 확인 절차",
+        "## 성능 / 접근성 / 리스크",
+        "- 성능(렌더/네트워크), a11y, 회귀 가능성",
+        "## 이슈",
+        "- Closes #123"
+      ]
+    },
+    {
+      "id": "issue-templates-enforcer",
+      "title": "Issue Templates",
+      "trigger": "always",
+      "instructions": [
+        "Ensure .github/ISSUE_TEMPLATE/feature.yml exists. If missing, create with the following content:",
+        "name: \"Feature request\"",
+        "labels: [\"feature\"]",
+        "body:",
+        "  - type: textarea",
+        "    attributes: { label: \"배경/문제\", placeholder: \"왜 필요한가?\" }",
+        "  - type: textarea",
+        "    attributes: { label: \"요구사항(완료 기준)\", placeholder: \"- [ ] ...\" }",
+        "  - type: textarea",
+        "    attributes: { label: \"FSD 영향\", placeholder: \"layers / 경로\" }",
+        "Ensure .github/ISSUE_TEMPLATE/bug.yml exists. If missing, create with the following content:",
+        "name: \"Bug report\"",
+        "labels: [\"bug\"]",
+        "body:",
+        "  - type: textarea",
+        "    attributes: { label: \"현상\", placeholder: \"무엇이 어떻게 잘못되었는가\" }",
+        "  - type: textarea",
+        "    attributes: { label: \"재현 절차\", placeholder: \"1) ... 2) ...\" }",
+        "  - type: textarea",
+        "    attributes: { label: \"예상 동작\", placeholder: \"정상 동작은?\" }",
+        "  - type: textarea",
+        "    attributes: { label: \"로그/스크린샷\", placeholder: \"첨부\" }"
+      ]
+    },
+    {
+      "id": "commit-template-hint",
+      "title": "Commit Message Template (Optional)",
+      "trigger": "commit",
+      "instructions": [
+        "If commit template is requested, create .gitmessage and advise to run: git config commit.template .gitmessage",
+        "Template content:",
+        "<type>(<scope>): <summary>",
+        "",
+        "Why:",
+        "- ",
+        "",
+        "Changes:",
+        "- ",
+        "",
+        "Refs: #"
+      ]
+    },
+    {
+      "id": "review-guidelines",
+      "title": "Cursor Code Review Rules",
+      "trigger": "review",
+      "instructions": [
+        "Check FSD layering (shared -> entities -> features -> widgets -> app) with no upward imports.",
+        "Verify server state logic exists only in entities/(api|queries); features/widgets consume hooks.",
+        "Ensure semantic HTML and a11y: landmarks, proper form associations, keyboard support, focus-visible, skip link.",
+        "Confirm Zustand is used only for UI/control state; no duplication of server data.",
+        "Validate mutation pattern: onMutate snapshot+optimistic, onError rollback, onSettled invalidate.",
+        "For searchable dropdowns: 300ms debounce, keyboard navigation, minimal ARIA (combobox OR semantic list), no focus trap.",
+        "Tailwind: class order, dark-mode contrast, no hover-only interactions; promote repeated styles to shared/ui.",
+        "All API calls go through shared/api/http.ts with error mapping; no hard-coded URLs.",
+        "Reject console.log, comment clutter, unused imports; encourage small composable components and clear naming.",
+        "Verify Conventional Commits and PR title format; check presence of templates.",
+        "Evaluate UX states (loading/empty/error/success) and keyboard accessibility."
+      ]
+    }
+  ]
+}
