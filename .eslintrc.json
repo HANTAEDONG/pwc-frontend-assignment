@@ -7,18 +7,22 @@
         "patterns": [
           {
             "group": ["@/features/*", "@/widgets/*", "@/app/*"],
+            "from": ["@/shared/**"],
             "message": "shared layer cannot import from features, widgets, or app"
           },
           {
             "group": ["@/widgets/*", "@/app/*"],
+            "from": ["@/entities/**"],
             "message": "entities layer cannot import from widgets or app"
           },
           {
             "group": ["@/app/*"],
+            "from": ["@/features/**"],
             "message": "features layer cannot import from app"
           },
           {
             "group": ["@/app/*"],
+            "from": ["@/widgets/**"],
             "message": "widgets layer cannot import from app"
           }
         ]
