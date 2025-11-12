@@ -1,23 +1,20 @@
-## 개요
+## 목적 / 배경
+- 무엇을 왜 바꾸는지 한 문단 요약
 
-- 무엇을, 왜 변경했는지
+## 변경 사항
+- 핵심 변경 요약 (bullet)
+- 스크린샷/영상 첨부
 
-## 주요 변경
+## FSD 영향
+- layers: app / entities / features / widgets / shared
+- 변경 경로 예: features/company-crud/ui/CompanyForm
 
-- [ ] 관심 기업 목록 조회
-- [ ] 등록 폼 (Searchable Dropdown)
-- [ ] 수정/삭제 (optimistic)
-- [ ] 상태/에러/빈 상태 UI
+## 테스트 / 확인 방법
+- pnpm i && pnpm test
+- 수동 확인 절차
 
-## 스크린샷(선택)
+## 성능 / 접근성 / 리스크
+- 성능(렌더/네트워크), a11y, 회귀 가능성
 
-## 확인 사항
-
-- [ ] 쿼리키/무결성
-- [ ] optimistic 롤백 동작
-- [ ] 접근성(focus/aria)
-- [ ] .env 사용(API_BASE_URL)
-
-## 이슈/레퍼런스
-
-- closes #...
+## 이슈
+- Closes #123
