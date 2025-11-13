@@ -6,7 +6,11 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { useState, useEffect } from "react";
 
 async function enableMocking() {
-  if (process.env.NODE_ENV !== "development") {
+  const shouldEnableMSW =
+    process.env.NEXT_PUBLIC_ENABLE_MSW === "true" &&
+    process.env.NODE_ENV === "development";
+
+  if (!shouldEnableMSW) {
     return;
   }
 
@@ -35,17 +39,9 @@ export function Providers({ children }: { children: ReactNode }) {
       })
   );
 
-  const [mswReady, setMswReady] = useState(false);
-
   useEffect(() => {
-    enableMocking().then(() => {
-      setMswReady(true);
-    });
+    enableMocking();
   }, []);
-
-  if (!mswReady && process.env.NODE_ENV === "development") {
-    return null;
-  }
 
   return (
     <QueryClientProvider client={queryClient}>
