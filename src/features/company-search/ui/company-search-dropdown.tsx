@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import type { ChangeEvent, KeyboardEvent } from "react";
 import { useCompanies } from "@/entities/company/queries";
 import { debounce } from "@/shared/lib/debounce";
 import { handleKeyboardNavigation } from "@/shared/lib/keyboard";
@@ -31,7 +32,7 @@ export function CompanySearchDropdown({
     );
   }, [companies, keyword]);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     debouncedSearch(value);
     setIsOpen(true);
@@ -44,7 +45,7 @@ export function CompanySearchDropdown({
     setKeyword("");
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
+  const handleKeyDown = (e: KeyboardEvent) => {
     handleKeyboardNavigation(e, {
       onEscape: () => setIsOpen(false),
       onArrowDown: () => {

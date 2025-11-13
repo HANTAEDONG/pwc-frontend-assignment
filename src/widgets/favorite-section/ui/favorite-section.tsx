@@ -5,6 +5,8 @@ import { FavoriteForm } from "@/features/favorite-form";
 import { FavoriteTable } from "@/features/favorite-table";
 import { useFavorite } from "@/entities/favorite";
 
+const DEFAULT_EMAIL = "test@example.com";
+
 export function FavoriteSection() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const { data: favorite } = useFavorite(editingId || "", {
@@ -25,12 +27,11 @@ export function FavoriteSection() {
       <article>
         <h3>{editingId ? "관심 기업 수정" : "관심 기업 등록"}</h3>
         <FavoriteForm
-          favoriteId={editingId || undefined}
+          email={DEFAULT_EMAIL}
           initialData={
             favorite
               ? {
-                  companyId: favorite.companyId,
-                  companyName: favorite.companyName,
+                  companyName: favorite.company_name,
                 }
               : undefined
           }
