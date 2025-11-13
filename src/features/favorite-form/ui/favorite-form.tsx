@@ -51,7 +51,7 @@ export function FavoriteForm({
       <fieldset>
         <legend>관심 기업 정보</legend>
         <div>
-          <label htmlFor="company-search-field">기업 선택</label>
+          <label htmlFor="company-search">기업 선택</label>
           <input
             type="hidden"
             {...register("companyName", { required: "기업을 선택해주세요" })}
