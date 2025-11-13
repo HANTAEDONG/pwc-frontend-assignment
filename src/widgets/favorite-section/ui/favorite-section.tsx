@@ -28,6 +28,7 @@ export function FavoriteSection() {
         <h3>{editingId ? "관심 기업 수정" : "관심 기업 등록"}</h3>
         <FavoriteForm
           email={DEFAULT_EMAIL}
+          favoriteId={editingId || undefined}
           initialData={
             favorite
               ? {

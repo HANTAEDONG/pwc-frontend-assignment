@@ -9,11 +9,13 @@ import { handleKeyboardNavigation } from "@/shared/lib/keyboard";
 export interface CompanySearchDropdownProps {
   onSelect: (companyName: string) => void;
   placeholder?: string;
+  disabled?: boolean;
 }
 
 export function CompanySearchDropdown({
   onSelect,
   placeholder = "기업명을 검색하세요",
+  disabled = false,
 }: CompanySearchDropdownProps) {
   const [keyword, setKeyword] = useState("");
   const [isOpen, setIsOpen] = useState(false);
@@ -33,6 +35,7 @@ export function CompanySearchDropdown({
   }, [companies, keyword]);
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+    if (disabled) return;
     const value = e.target.value;
     debouncedSearch(value);
     setIsOpen(true);
@@ -77,9 +80,10 @@ export function CompanySearchDropdown({
         placeholder={placeholder}
         onChange={handleInputChange}
         onKeyDown={handleKeyDown}
-        onFocus={() => setIsOpen(true)}
+        onFocus={() => !disabled && setIsOpen(true)}
         aria-autocomplete="list"
         aria-controls="company-search-results"
+        disabled={disabled}
         className="w-full"
       />
       {isOpen && keyword && (

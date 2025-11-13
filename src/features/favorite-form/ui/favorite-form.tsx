@@ -2,7 +2,10 @@
 
 import { useForm } from "react-hook-form";
 import { CompanySearchDropdown } from "@/features/company-search";
-import { useCreateFavoriteCompany } from "@/entities/favorite/queries";
+import {
+  useCreateFavoriteCompany,
+  useUpdateFavoriteCompany,
+} from "@/entities/favorite/queries";
 import { Button } from "@/shared/ui";
 
 export interface FavoriteFormData {
@@ -11,16 +14,21 @@ export interface FavoriteFormData {
 
 export interface FavoriteFormProps {
   email: string;
+  favoriteId?: string;
   initialData?: FavoriteFormData;
   onSuccess?: () => void;
 }
 
 export function FavoriteForm({
   email,
+  favoriteId,
   initialData,
   onSuccess,
 }: FavoriteFormProps) {
   const createMutation = useCreateFavoriteCompany();
+  const updateMutation = useUpdateFavoriteCompany();
+
+  const isEditMode = !!favoriteId;
 
   const {
     handleSubmit,
@@ -33,11 +41,19 @@ export function FavoriteForm({
 
   const onSubmit = async (data: FavoriteFormData) => {
     try {
-      await createMutation.mutateAsync({
-        email,
-        company_name: data.companyName,
-        memo: null,
-      });
+      if (isEditMode) {
+        await updateMutation.mutateAsync({
+          favorite_id: parseInt(favoriteId, 10),
+          email,
+          memo: null,
+        });
+      } else {
+        await createMutation.mutateAsync({
+          email,
+          company_name: data.companyName,
+          memo: null,
+        });
+      }
       onSuccess?.();
     } catch {}
   };
@@ -45,6 +61,8 @@ export function FavoriteForm({
   const handleCompanySelect = (companyName: string) => {
     setValue("companyName", companyName, { shouldValidate: true });
   };
+
+  const isPending = createMutation.isPending || updateMutation.isPending;
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} noValidate>
@@ -54,9 +72,15 @@ export function FavoriteForm({
           <label htmlFor="company-search">기업 선택</label>
           <input
             type="hidden"
-            {...register("companyName", { required: "기업을 선택해주세요" })}
+            {...register("companyName", {
+              required: "기업을 선택해주세요",
+              disabled: isEditMode,
+            })}
           />
-          <CompanySearchDropdown onSelect={handleCompanySelect} />
+          <CompanySearchDropdown
+            onSelect={handleCompanySelect}
+            disabled={isEditMode}
+          />
           {errors.companyName && (
             <div id="company-error" role="alert">
               {errors.companyName.message}
@@ -64,8 +88,8 @@ export function FavoriteForm({
           )}
         </div>
         <div>
-          <Button type="submit" disabled={createMutation.isPending}>
-            등록
+          <Button type="submit" disabled={isPending}>
+            {isEditMode ? "수정" : "등록"}
           </Button>
         </div>
       </fieldset>
