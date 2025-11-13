@@ -1,33 +1,31 @@
-'use client';
+"use client";
 
-import { useForm } from 'react-hook-form';
-import { CompanySearchDropdown } from '@/features/company-search';
-import { useCreateFavorite, useUpdateFavorite } from '@/entities/favorite';
-import { Button, Input } from '@/shared/ui';
+import { useForm } from "react-hook-form";
+import { CompanySearchDropdown } from "@/features/company-search";
+import { useCreateFavoriteCompany } from "@/entities/favorite/queries";
+import { Button } from "@/shared/ui";
 
 export interface FavoriteFormData {
-  companyId: string;
   companyName: string;
 }
 
 export interface FavoriteFormProps {
+  email: string;
   initialData?: FavoriteFormData;
-  favoriteId?: string;
   onSuccess?: () => void;
 }
 
 export function FavoriteForm({
+  email,
   initialData,
-  favoriteId,
   onSuccess,
 }: FavoriteFormProps) {
-  const createMutation = useCreateFavorite();
-  const updateMutation = useUpdateFavorite();
+  const createMutation = useCreateFavoriteCompany();
 
   const {
-    register,
     handleSubmit,
     setValue,
+    register,
     formState: { errors },
   } = useForm<FavoriteFormData>({
     defaultValues: initialData,
@@ -35,24 +33,17 @@ export function FavoriteForm({
 
   const onSubmit = async (data: FavoriteFormData) => {
     try {
-      if (favoriteId) {
-        await updateMutation.mutateAsync({
-          id: favoriteId,
-        });
-      } else {
-        await createMutation.mutateAsync({
-          companyId: data.companyId,
-          companyName: data.companyName,
-        });
-      }
+      await createMutation.mutateAsync({
+        email,
+        company_name: data.companyName,
+        memo: null,
+      });
       onSuccess?.();
-    } catch (error) {
-    }
+    } catch {}
   };
 
-  const handleCompanySelect = (companyId: string, companyName: string) => {
-    setValue('companyId', companyId);
-    setValue('companyName', companyName);
+  const handleCompanySelect = (companyName: string) => {
+    setValue("companyName", companyName, { shouldValidate: true });
   };
 
   return (
@@ -61,16 +52,20 @@ export function FavoriteForm({
         <legend>관심 기업 정보</legend>
         <div>
           <label htmlFor="company-search-field">기업 선택</label>
+          <input
+            type="hidden"
+            {...register("companyName", { required: "기업을 선택해주세요" })}
+          />
           <CompanySearchDropdown onSelect={handleCompanySelect} />
-          {errors.companyId && (
+          {errors.companyName && (
             <div id="company-error" role="alert">
-              {errors.companyId.message}
+              {errors.companyName.message}
             </div>
           )}
         </div>
         <div>
-          <Button type="submit" disabled={createMutation.isPending || updateMutation.isPending}>
-            {favoriteId ? '수정' : '등록'}
+          <Button type="submit" disabled={createMutation.isPending}>
+            등록
           </Button>
         </div>
       </fieldset>

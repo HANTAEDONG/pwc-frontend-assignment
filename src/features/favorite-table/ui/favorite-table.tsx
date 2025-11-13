@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { useFavorites, useDeleteFavorite } from '@/entities/favorite';
-import { Button } from '@/shared/ui';
+import { useFavorites, useDeleteFavorite } from "@/entities/favorite";
+import { Button } from "@/shared/ui";
 
 export interface FavoriteTableProps {
   onEdit?: (id: string) => void;
@@ -12,10 +12,11 @@ export function FavoriteTable({ onEdit }: FavoriteTableProps) {
   const deleteMutation = useDeleteFavorite();
 
   const handleDelete = async (id: string) => {
-    if (confirm('정말 삭제하시겠습니까?')) {
+    if (confirm("정말 삭제하시겠습니까?")) {
       try {
         await deleteMutation.mutateAsync(id);
-      } catch (error) {
+      } catch {
+        // 에러 처리
       }
     }
   };
@@ -48,9 +49,7 @@ export function FavoriteTable({ onEdit }: FavoriteTableProps) {
           {favorites.map((favorite) => (
             <tr key={favorite.id}>
               <td>{favorite.companyName}</td>
-              <td>
-                {new Date().toLocaleDateString()}
-              </td>
+              <td>{new Date().toLocaleDateString()}</td>
               <td>
                 {onEdit && (
                   <Button
