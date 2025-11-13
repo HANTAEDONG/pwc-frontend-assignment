@@ -59,6 +59,7 @@ export const handlers = [
       items: paginatedItems.map((f) => ({
         id: f.id,
         company_name: f.company_name,
+        memo: f.memo,
         created_at: f.created_at,
       })),
     };

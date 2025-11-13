@@ -21,6 +21,7 @@ export interface FavoriteCompanyResponse {
 export interface FavoriteCompanyListItem {
   id: number;
   company_name: string;
+  memo: string | null;
   created_at: string;
 }
 

@@ -96,6 +96,7 @@ export function useCreateFavoriteCompany(
         const optimisticItem: FavoriteCompanyListItem = {
           id: -1,
           company_name: newFavorite.company_name,
+          memo: newFavorite.memo,
           created_at: new Date().toISOString(),
         };
         queryClient.setQueryData<PaginatedFavoriteCompanyResponse>(
@@ -168,7 +169,9 @@ export function useUpdateFavoriteCompany(
         queryClient.setQueryData<PaginatedFavoriteCompanyResponse>(listKey, {
           ...previousFavorites,
           items: previousFavorites.items.map((item) =>
-            item.id === updatedFavorite.favorite_id ? { ...item } : item
+            item.id === updatedFavorite.favorite_id
+              ? { ...item, memo: updatedFavorite.memo }
+              : item
           ),
         });
       }
