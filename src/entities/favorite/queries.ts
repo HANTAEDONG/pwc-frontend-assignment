@@ -253,7 +253,18 @@ export function useDeleteFavoriteCompany(
   });
 }
 
-const DEFAULT_EMAIL = "user@example.com";
+const DEFAULT_EMAIL = "test@example.com";
+
+export function useFavorite(
+  id: string,
+  options?: QueryOptions<FavoriteCompanyResponse>
+) {
+  const favoriteId = parseInt(id, 10);
+  return useFavoriteCompanyDetailQuery(
+    { favorite_id: favoriteId, email: DEFAULT_EMAIL },
+    { enabled: !!id && !isNaN(favoriteId), ...options }
+  );
+}
 
 export function useFavorites(email: string = DEFAULT_EMAIL) {
   const { data, isLoading, error } = useFavoriteCompaniesQuery(
