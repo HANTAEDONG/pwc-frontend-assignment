@@ -1,25 +1,19 @@
-import { useQuery, UseQueryOptions } from "@tanstack/react-query";
-import {
-  searchCompanies,
-  CompanySearchParams,
-  CompanySearchResponse,
-} from "./api";
+import { useQuery } from "@tanstack/react-query";
+import { getCompanies } from "./api";
+import type { QueryOptions, QueryKeyFactory } from "@/shared/lib/react-query";
 
-export const companyQueryKeys = {
+export const companyQueryKeys: QueryKeyFactory<["company"]> = {
   all: ["company"] as const,
-  search: (keyword: string) => ["company", "search", keyword] as const,
-};
+  lists: () => [...companyQueryKeys.all, "list"] as const,
+  list: () => [...companyQueryKeys.lists()] as const,
+  details: () => [...companyQueryKeys.all, "detail"] as const,
+  detail: () => [...companyQueryKeys.details()] as const,
+} as const;
 
-export function useCompanySearch(
-  params: CompanySearchParams,
-  options?: Omit<
-    UseQueryOptions<CompanySearchResponse, Error>,
-    "queryKey" | "queryFn"
-  >
-) {
+export function useCompanies(options?: QueryOptions<string[]>) {
   return useQuery({
-    queryKey: companyQueryKeys.search(params.keyword),
-    queryFn: () => searchCompanies(params),
+    queryKey: companyQueryKeys.lists(),
+    queryFn: getCompanies,
     ...options,
   });
 }

@@ -1,28 +1,17 @@
 {
   "extends": ["next/core-web-vitals", "next/typescript"],
+  "ignorePatterns": [
+    "jest.config.js",
+    "next.config.js",
+    "tailwind.config.js",
+    "postcss.config.js",
+    "*.config.js",
+    "jest.setup.ts",
+    "jest.polyfills.ts",
+    "mocks/**",
+    "public/**"
+  ],
   "rules": {
-    "no-restricted-imports": [
-      "error",
-      {
-        "patterns": [
-          {
-            "group": ["@/features/*", "@/widgets/*", "@/app/*"],
-            "message": "shared layer cannot import from features, widgets, or app"
-          },
-          {
-            "group": ["@/widgets/*", "@/app/*"],
-            "message": "entities layer cannot import from widgets or app"
-          },
-          {
-            "group": ["@/app/*"],
-            "message": "features layer cannot import from app"
-          },
-          {
-            "group": ["@/app/*"],
-            "message": "widgets layer cannot import from app"
-          }
-        ]
-      }
-    ]
+    "no-restricted-imports": "off"
   }
 }

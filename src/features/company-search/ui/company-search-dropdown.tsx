@@ -1,55 +1,60 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useCompanySearch } from '@/entities/company';
-import { debounce } from '@/shared/lib/debounce';
-import { handleKeyboardNavigation, KeyboardKeys } from '@/shared/lib/keyboard';
+import { useState, useMemo } from "react";
+import type { ChangeEvent, KeyboardEvent } from "react";
+import { useCompanies } from "@/entities/company/queries";
+import { debounce } from "@/shared/lib/debounce";
+import { handleKeyboardNavigation } from "@/shared/lib/keyboard";
 
 export interface CompanySearchDropdownProps {
-  onSelect: (companyId: string, companyName: string) => void;
+  onSelect: (companyName: string) => void;
   placeholder?: string;
+  disabled?: boolean;
 }
 
 export function CompanySearchDropdown({
   onSelect,
-  placeholder = '기업명을 검색하세요',
+  placeholder = "기업명을 검색하세요",
+  disabled = false,
 }: CompanySearchDropdownProps) {
-  const [keyword, setKeyword] = useState('');
+  const [keyword, setKeyword] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(-1);
 
-  const debouncedSearch = debounce((value: string) => {
+  const debouncedSearch = debounce<(value: string) => void>((value: string) => {
     setKeyword(value);
   }, 300);
 
-  const { data, isLoading, error } = useCompanySearch(
-    { keyword },
-    {
-      enabled: keyword.length > 0,
-      keepPreviousData: true,
-    }
-  );
+  const { data: companies, isLoading, error } = useCompanies();
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const filteredCompanies = useMemo(() => {
+    if (!companies || !keyword) return [];
+    return companies.filter((name) =>
+      name.toLowerCase().includes(keyword.toLowerCase())
+    );
+  }, [companies, keyword]);
+
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+    if (disabled) return;
     const value = e.target.value;
     debouncedSearch(value);
     setIsOpen(true);
     setSelectedIndex(-1);
   };
 
-  const handleSelect = (companyId: string, companyName: string) => {
-    onSelect(companyId, companyName);
+  const handleSelect = (companyName: string) => {
+    onSelect(companyName);
     setIsOpen(false);
-    setKeyword('');
+    setKeyword("");
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
+  const handleKeyDown = (e: KeyboardEvent) => {
     handleKeyboardNavigation(e, {
       onEscape: () => setIsOpen(false),
       onArrowDown: () => {
-        if (data?.companies && data.companies.length > 0) {
+        if (filteredCompanies.length > 0) {
           setSelectedIndex((prev) =>
-            prev < data.companies.length - 1 ? prev + 1 : prev
+            prev < filteredCompanies.length - 1 ? prev + 1 : prev
           );
         }
       },
@@ -57,13 +62,8 @@ export function CompanySearchDropdown({
         setSelectedIndex((prev) => (prev > 0 ? prev - 1 : -1));
       },
       onEnter: () => {
-        if (
-          selectedIndex >= 0 &&
-          data?.companies &&
-          data.companies[selectedIndex]
-        ) {
-          const company = data.companies[selectedIndex];
-          handleSelect(company.id, company.name);
+        if (selectedIndex >= 0 && filteredCompanies[selectedIndex]) {
+          handleSelect(filteredCompanies[selectedIndex]);
         }
       },
     });
@@ -80,10 +80,10 @@ export function CompanySearchDropdown({
         placeholder={placeholder}
         onChange={handleInputChange}
         onKeyDown={handleKeyDown}
-        onFocus={() => setIsOpen(true)}
+        onFocus={() => !disabled && setIsOpen(true)}
         aria-autocomplete="list"
-        aria-expanded={isOpen}
         aria-controls="company-search-results"
+        disabled={disabled}
         className="w-full"
       />
       {isOpen && keyword && (
@@ -94,20 +94,18 @@ export function CompanySearchDropdown({
         >
           {isLoading && <li>검색 중...</li>}
           {error && <li role="alert">검색 중 오류가 발생했습니다.</li>}
-          {data?.companies.length === 0 && (
-            <li>검색 결과가 없습니다.</li>
-          )}
-          {data?.companies.map((company, index) => (
+          {filteredCompanies.length === 0 && <li>검색 결과가 없습니다.</li>}
+          {filteredCompanies.map((companyName, index) => (
             <li
-              key={company.id}
+              key={companyName}
               role="option"
               aria-selected={index === selectedIndex}
-              onClick={() => handleSelect(company.id, company.name)}
+              onClick={() => handleSelect(companyName)}
               className={`cursor-pointer p-2 ${
-                index === selectedIndex ? 'bg-blue-100' : ''
+                index === selectedIndex ? "bg-blue-100" : ""
               }`}
             >
-              {company.name}
+              {companyName}
             </li>
           ))}
         </ul>

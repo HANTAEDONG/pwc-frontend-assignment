@@ -1,3 +1,5 @@
+import type { KeyboardEvent } from "react";
+
 export const KeyboardKeys = {
   Enter: "Enter",
   Escape: "Escape",
@@ -9,7 +11,7 @@ export const KeyboardKeys = {
 } as const;
 
 export function handleKeyboardNavigation(
-  event: React.KeyboardEvent,
+  event: KeyboardEvent,
   handlers: {
     onEnter?: () => void;
     onEscape?: () => void;
