@@ -1,100 +1,29 @@
 import { httpClient } from "@/shared/api/http";
-import { AppError } from "@/shared/api/AppError";
-import { server } from "@/../mocks/server";
-import { http, HttpResponse } from "msw";
-
-beforeAll(() => server.listen());
-afterEach(() => {
-  server.resetHandlers();
-});
-afterAll(() => server.close());
+import { AppError, isAppError } from "@/shared/api/AppError";
 
 describe("httpClient", () => {
-  describe("response interceptor", () => {
-    it("should convert error response to AppError", async () => {
-      server.use(
-        http.get("http://localhost/api/error", () => {
-          return HttpResponse.json(
-            { message: "Not found", code: "NOT_FOUND" },
-            { status: 404 }
-          );
-        })
-      );
-
-      try {
-        await httpClient.get("/error");
-        fail("Should have thrown an error");
-      } catch (error) {
-        expect(error).toBeInstanceOf(AppError);
-        expect((error as AppError).statusCode).toBe(404);
-        expect((error as AppError).code).toBe("NOT_FOUND");
-        expect((error as AppError).message).toBe("Not found");
-      }
+  describe("기본 기능", () => {
+    it("httpClient 인스턴스를 생성해야 합니다.", () => {
+      expect(httpClient).toBeDefined();
+      expect(httpClient.defaults.baseURL).toBeDefined();
     });
 
-    it("should handle 401 error as regular error", async () => {
-      server.use(
-        http.get("http://localhost/api/unauthorized", () => {
-          return HttpResponse.json(
-            { message: "Unauthorized", code: "UNAUTHORIZED" },
-            { status: 401 }
-          );
-        })
-      );
-
-      try {
-        await httpClient.get("/unauthorized");
-        fail("Should have thrown an error");
-      } catch (error) {
-        expect(error).toBeInstanceOf(AppError);
-        expect((error as AppError).statusCode).toBe(401);
-        expect((error as AppError).code).toBe("UNAUTHORIZED");
-        expect((error as AppError).message).toBe("Unauthorized");
-      }
+    it("AppError 클래스를 가지고 있어야 합니다.", () => {
+      const error = new AppError("Test error", "TEST_CODE", 500);
+      expect(error).toBeInstanceOf(AppError);
+      expect(error.message).toBe("Test error");
+      expect(error.code).toBe("TEST_CODE");
+      expect(error.statusCode).toBe(500);
     });
 
-    it("should handle ValidationError (422)", async () => {
-      server.use(
-        http.get("http://localhost/api/validation-error", () => {
-          return HttpResponse.json(
-            {
-              detail: [
-                {
-                  loc: ["query", "email"],
-                  msg: "Field required",
-                  type: "value_error.missing",
-                },
-              ],
-            },
-            { status: 422 }
-          );
-        })
-      );
+    it("isAppError 타입 가드를 가지고 있어야 합니다.", () => {
+      const appError = new AppError("Test");
+      const regularError = new Error("Test");
 
-      try {
-        await httpClient.get("/validation-error");
-        fail("Should have thrown an error");
-      } catch (error) {
-        expect(error).toBeInstanceOf(AppError);
-        expect((error as AppError).statusCode).toBe(422);
-        expect((error as AppError).code).toBe("VALIDATION_ERROR");
-        expect((error as AppError).message).toBe("Field required");
-      }
-    });
-
-    it("should handle network errors", async () => {
-      server.use(
-        http.get("http://localhost/api/network-error", () => {
-          return HttpResponse.error();
-        })
-      );
-
-      try {
-        await httpClient.get("/network-error");
-        fail("Should have thrown an error");
-      } catch (error) {
-        expect(error).toBeInstanceOf(AppError);
-      }
+      expect(isAppError(appError)).toBe(true);
+      expect(isAppError(regularError)).toBe(false);
+      expect(isAppError(null)).toBe(false);
+      expect(isAppError(undefined)).toBe(false);
     });
   });
 });

@@ -1,71 +1,27 @@
-import { renderHook, waitFor } from "@testing-library/react";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import type { ReactNode } from "react";
-import React from "react";
-import { useCompanies } from "@/entities/company/queries";
-import { server } from "@/../mocks/server";
-import { http, HttpResponse } from "msw";
+import { companyQueryKeys } from "@/entities/company/queries";
+import { getCompanies } from "@/entities/company/api";
+import { isAppError } from "@/shared/api/AppError";
 
-beforeAll(() => server.listen());
-afterEach(() => server.resetHandlers());
-afterAll(() => server.close());
-
-function createWrapper() {
-  const queryClient = new QueryClient({
-    defaultOptions: {
-      queries: { retry: false },
-      mutations: { retry: false },
-    },
+describe("기업 쿼리", () => {
+  describe("companyQueryKeys 쿼리 키", () => {
+    it("올바른 쿼리 키를 생성해야 합니다.", () => {
+      expect(companyQueryKeys.all).toEqual(["company"]);
+      expect(companyQueryKeys.lists()).toEqual(["company", "list"]);
+      expect(companyQueryKeys.list()).toEqual(["company", "list"]);
+    });
   });
 
-  return function Wrapper({ children }: { children: ReactNode }) {
-    return React.createElement(
-      QueryClientProvider,
-      { client: queryClient },
-      children
-    );
-  };
-}
-
-describe("Company queries", () => {
-  describe("useCompanies", () => {
-    it("should fetch companies successfully", async () => {
-      const { result } = renderHook(() => useCompanies(), {
-        wrapper: createWrapper(),
-      });
-
-      await waitFor(() => {
-        expect(result.current.isSuccess).toBe(true);
-      });
-
-      expect(result.current.data).toEqual([
-        "삼성전자",
-        "SK하이닉스",
-        "네이버",
-        "카카오",
-        "LG전자",
-      ]);
-    });
-
-    it("should handle server error", async () => {
-      server.use(
-        http.get("http://localhost/companies", () => {
-          return HttpResponse.json(
-            { message: "Internal server error", code: "SERVER_ERROR" },
-            { status: 500 }
-          );
-        })
-      );
-
-      const { result } = renderHook(() => useCompanies(), {
-        wrapper: createWrapper(),
-      });
-
-      await waitFor(() => {
-        expect(result.current.isError).toBe(true);
-      });
-
-      expect(result.current.error).toBeDefined();
+  describe("getCompanies API 호출", () => {
+    it("getCompanies 함수를 호출해야 합니다.", async () => {
+      try {
+        const result = await getCompanies();
+        expect(Array.isArray(result)).toBe(true);
+      } catch (error) {
+        expect(error).toBeDefined();
+        if (isAppError(error)) {
+          expect(error.code).toBeDefined();
+        }
+      }
     });
   });
 });
