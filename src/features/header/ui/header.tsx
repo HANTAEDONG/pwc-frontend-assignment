@@ -26,9 +26,9 @@ export function Header() {
   const isGeneralTask = pathname === "/";
 
   return (
-    <header className="h-[60px] border-b border-gray-200 bg-white">
+    <header className="h-[60px] border-b border-primary-200 bg-white">
       <div className="container mx-auto h-full px-4">
-        <div className="flex h-full items-center justify-between">
+        <div className="max-w-7xl mx-auto h-full flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Link href="/" aria-label="홈으로 이동">
               <Image
