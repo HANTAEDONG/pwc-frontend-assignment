@@ -4,6 +4,7 @@ import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import type { FavoriteCompanyListItem } from "@/entities/favorite/api";
 import type { UseDeleteFavoriteCompanyReturn } from "../model";
+import { useUiDialog } from "@/entities/ui";
 
 interface UseFavoriteTableStateOptions {
   filteredItems: FavoriteCompanyListItem[];
@@ -13,19 +14,14 @@ interface UseFavoriteTableStateOptions {
 
 export interface UseFavoriteTableStateReturn {
   selectedIds: Set<number>;
-  deleteModalOpen: boolean;
   pendingDeleteIds: number[];
-  detailModalOpen: boolean;
   selectedFavoriteId: number | null;
   allSelected: boolean;
   handleSelectAll: (checked: boolean) => void;
   handleSelectRow: (id: number, checked: boolean) => void;
   handleDeleteClick: (id: number) => void;
-  handleConfirmDelete: () => Promise<void>;
-  handleCancelDelete: () => void;
   handleDeleteSelected: () => void;
   handleCompanyClick: (id: number) => void;
-  handleDetailModalClose: () => void;
   handlePageChange: (newPage: number) => void;
   shouldShowPagination: boolean;
   getSelectedIds: () => number[];
@@ -37,10 +33,9 @@ export function useFavoriteTableState({
   data,
 }: UseFavoriteTableStateOptions): UseFavoriteTableStateReturn {
   const router = useRouter();
+  const { openDialog } = useUiDialog();
   const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
-  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [pendingDeleteIds, setPendingDeleteIds] = useState<number[]>([]);
-  const [detailModalOpen, setDetailModalOpen] = useState(false);
   const [selectedFavoriteId, setSelectedFavoriteId] = useState<number | null>(
     null
   );
@@ -74,7 +69,19 @@ export function useFavoriteTableState({
 
   const handleDeleteClick = (id: number) => {
     setPendingDeleteIds([id]);
-    setDeleteModalOpen(true);
+    openDialog("deleteFavoriteConfirm", {
+      count: 1,
+      onConfirm: async () => {
+        try {
+          await deleteMutation.mutateAsync({
+            favorite_id: id,
+            email: "test@example.com",
+          });
+          setSelectedIds(new Set());
+          setPendingDeleteIds([]);
+        } catch {}
+      },
+    });
   };
 
   const handleConfirmDelete = async () => {
@@ -86,34 +93,27 @@ export function useFavoriteTableState({
         });
       }
       setSelectedIds(new Set());
-      setDeleteModalOpen(false);
       setPendingDeleteIds([]);
-    } catch {
-      // 에러는 mutation에서 처리됨
-    }
-  };
-
-  const handleCancelDelete = () => {
-    setDeleteModalOpen(false);
-    setPendingDeleteIds([]);
+    } catch {}
   };
 
   const handleDeleteSelected = () => {
     const selectedArray = Array.from(selectedIds);
     if (selectedArray.length > 0) {
       setPendingDeleteIds(selectedArray);
-      setDeleteModalOpen(true);
+      openDialog("deleteFavoriteConfirm", {
+        count: selectedArray.length,
+        onConfirm: handleConfirmDelete,
+      });
     }
   };
 
   const handleCompanyClick = (id: number) => {
     setSelectedFavoriteId(id);
-    setDetailModalOpen(true);
-  };
-
-  const handleDetailModalClose = () => {
-    setDetailModalOpen(false);
-    setSelectedFavoriteId(null);
+    openDialog("favoriteDetail", {
+      favoriteId: id,
+      onSuccess: () => {},
+    });
   };
 
   const handlePageChange = (newPage: number) => {
@@ -130,19 +130,14 @@ export function useFavoriteTableState({
 
   return {
     selectedIds,
-    deleteModalOpen,
     pendingDeleteIds,
-    detailModalOpen,
     selectedFavoriteId,
     allSelected,
     handleSelectAll,
     handleSelectRow,
     handleDeleteClick,
-    handleConfirmDelete,
-    handleCancelDelete,
     handleDeleteSelected,
     handleCompanyClick,
-    handleDetailModalClose,
     handlePageChange,
     shouldShowPagination,
     getSelectedIds,

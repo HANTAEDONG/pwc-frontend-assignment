@@ -5,9 +5,7 @@ import { useFavoriteTable, useFavoriteTableState } from "../model";
 import { TableContainer } from "./components/table-container";
 import { TableHeader } from "./components/table-header";
 import { TableBody } from "./components/table-body";
-import { DeleteConfirmModal } from "./components/delete-confirm-modal";
 import { Pagination } from "./components/pagination";
-import { DetailModal } from "./components/detail-modal";
 
 export interface FavoriteTableProps {
   searchQuery?: string;
@@ -42,19 +40,12 @@ export const FavoriteTable = forwardRef<FavoriteTableRef, FavoriteTableProps>(
 
     const {
       selectedIds,
-      deleteModalOpen,
-      pendingDeleteIds,
-      detailModalOpen,
-      selectedFavoriteId,
       allSelected,
       handleSelectAll,
       handleSelectRow,
       handleDeleteClick,
-      handleConfirmDelete,
-      handleCancelDelete,
       handleDeleteSelected,
       handleCompanyClick,
-      handleDetailModalClose,
       handlePageChange,
       shouldShowPagination,
       getSelectedIds,
@@ -104,20 +95,6 @@ export const FavoriteTable = forwardRef<FavoriteTableRef, FavoriteTableProps>(
             />
           </div>
         )}
-        <DeleteConfirmModal
-          isOpen={deleteModalOpen}
-          count={pendingDeleteIds.length}
-          onConfirm={handleConfirmDelete}
-          onCancel={handleCancelDelete}
-        />
-        <DetailModal
-          isOpen={detailModalOpen}
-          favoriteId={selectedFavoriteId}
-          onClose={handleDetailModalClose}
-          onSuccess={() => {
-            // queryClient가 자동으로 invalidate하므로 별도 처리 불필요
-          }}
-        />
       </>
     );
   }
