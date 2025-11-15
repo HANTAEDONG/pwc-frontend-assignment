@@ -19,6 +19,8 @@ export const financialStatementQueryKeys = {
       reprtCode,
       fsDiv,
     ] as const,
+  details: () => [...financialStatementQueryKeys.all, "detail"] as const,
+  detail: () => [...financialStatementQueryKeys.details()] as const,
 } as const as QueryKeyFactory<["financial-statement"]>;
 
 export function useFinancialStatementQuery(
