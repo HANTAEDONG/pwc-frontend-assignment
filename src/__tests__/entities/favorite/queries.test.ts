@@ -9,18 +9,18 @@ describe("관심 기업 쿼리", () => {
     it("올바른 쿼리 키를 생성해야 합니다.", () => {
       expect(favoriteQueryKeys.all).toEqual(["favorite"]);
       expect(favoriteQueryKeys.lists()).toEqual(["favorite", "list"]);
-      expect(favoriteQueryKeys.list("test@example.com", 1)).toEqual([
+      expect(favoriteQueryKeys.list("htd0913@gmail.com", 1)).toEqual([
         "favorite",
         "list",
-        "test@example.com",
+        "htd0913@gmail.com",
         1,
       ]);
       expect(favoriteQueryKeys.details()).toEqual(["favorite", "detail"]);
-      expect(favoriteQueryKeys.detail(1, "test@example.com")).toEqual([
+      expect(favoriteQueryKeys.detail(1, "htd0913@gmail.com")).toEqual([
         "favorite",
         "detail",
         1,
-        "test@example.com",
+        "htd0913@gmail.com",
       ]);
     });
   });
@@ -28,7 +28,7 @@ describe("관심 기업 쿼리", () => {
   describe("getFavoriteCompanies API 호출", () => {
     it("getFavoriteCompanies 함수를 호출해야 합니다.", async () => {
       try {
-        await getFavoriteCompanies({ email: "test@example.com", page: 1 });
+        await getFavoriteCompanies({ email: "htd0913@gmail.com", page: 1 });
       } catch (error) {
         expect(error).toBeDefined();
       }
@@ -40,7 +40,7 @@ describe("관심 기업 쿼리", () => {
       try {
         await getFavoriteCompanyDetail({
           favorite_id: 1,
-          email: "test@example.com",
+          email: "htd0913@gmail.com",
         });
       } catch (error) {
         expect(error).toBeDefined();

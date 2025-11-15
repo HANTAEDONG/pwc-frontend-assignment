@@ -298,7 +298,7 @@ export function useDeleteFavoriteCompany(
   });
 }
 
-const DEFAULT_EMAIL = "test@example.com";
+const DEFAULT_EMAIL = "htd0913@gmail.com";
 
 export function useFavorite(
   id: string,

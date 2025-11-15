@@ -75,7 +75,7 @@ export function useFavoriteTableState({
         try {
           await deleteMutation.mutateAsync({
             favorite_id: id,
-            email: "test@example.com",
+            email: "htd0913@gmail.com",
           });
           setSelectedIds(new Set());
           setPendingDeleteIds([]);
@@ -89,7 +89,7 @@ export function useFavoriteTableState({
       for (const id of pendingDeleteIds) {
         await deleteMutation.mutateAsync({
           favorite_id: id,
-          email: "test@example.com",
+          email: "htd0913@gmail.com",
         });
       }
       setSelectedIds(new Set());

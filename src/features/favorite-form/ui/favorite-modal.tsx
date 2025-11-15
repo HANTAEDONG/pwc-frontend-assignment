@@ -4,7 +4,7 @@ import { FavoriteForm } from "./favorite-form";
 import { X } from "lucide-react";
 import { Modal } from "@/shared/ui";
 
-const DEFAULT_EMAIL = "test@example.com";
+const DEFAULT_EMAIL = "htd0913@gmail.com";
 
 interface FavoriteModalProps {
   isOpen: boolean;

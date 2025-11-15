@@ -18,7 +18,7 @@ interface DialogContentProps {
   onClose: () => void;
 }
 
-const DEFAULT_EMAIL = "test@example.com";
+const DEFAULT_EMAIL = "htd0913@gmail.com";
 
 const maxWidthClasses = {
   sm: "max-w-sm",

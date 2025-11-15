@@ -11,7 +11,7 @@ import type {
   PaginatedFavoriteCompanyResponse,
 } from "@/entities/favorite/api";
 
-const DEFAULT_EMAIL = "test@example.com";
+const DEFAULT_EMAIL = "htd0913@gmail.com";
 
 export interface UseFavoriteTableOptions {
   searchQuery?: string;
