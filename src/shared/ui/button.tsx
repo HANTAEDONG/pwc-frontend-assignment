@@ -20,7 +20,7 @@ const buttonVariants = cva(
         primary:
           "bg-primary text-primary-foreground hover:bg-primary-dark focus-visible:ring-primary",
         secondary:
-          "bg-gray-600 text-white hover:bg-gray-700 focus-visible:ring-gray-400",
+          "bg-black text-white hover:bg-gray-700 focus-visible:ring-gray-400",
         outline:
           "border border-gray-border bg-white text-gray-600 hover:bg-gray-50 focus-visible:ring-primary",
         ghost:
@@ -60,7 +60,9 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         className={cn(buttonVariants({ variant, size }), className)}
         {...props}
       >
-        {leftIcon && <span className="inline-flex items-center">{leftIcon}</span>}
+        {leftIcon && (
+          <span className="inline-flex items-center">{leftIcon}</span>
+        )}
         {children}
         {rightIcon && (
           <span className="inline-flex items-center">{rightIcon}</span>
