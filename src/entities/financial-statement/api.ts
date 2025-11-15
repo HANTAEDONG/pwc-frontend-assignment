@@ -1,0 +1,62 @@
+import { dartHttpClient } from "@/shared/api/dart-http";
+import { env } from "@/shared/config/env";
+import { AppError } from "@/shared/api/AppError";
+import type {
+  DartFinancialStatementResponse,
+  FinancialStatementResponse,
+  FinancialStatementRow,
+} from "./model/types";
+
+export interface GetFinancialStatementParams {
+  corp_code: string;
+  bsns_year: string;
+  reprt_code: string;
+  fs_div: string;
+}
+
+export async function getFinancialStatement(
+  params: GetFinancialStatementParams
+): Promise<FinancialStatementResponse> {
+  const response = await dartHttpClient.get<DartFinancialStatementResponse>(
+    "/fnlttSinglAcntAll.json",
+    {
+      params: {
+        crtfc_key: env.dartApiKey,
+        corp_code: params.corp_code,
+        bsns_year: params.bsns_year,
+        reprt_code: params.reprt_code,
+        fs_div: params.fs_div,
+      },
+    }
+  );
+
+  const data = response.data;
+
+  if (data.status !== "000") {
+    throw new AppError(
+      data.message || "Failed to fetch financial statement",
+      data.status,
+      undefined,
+      data
+    );
+  }
+
+  const rows: FinancialStatementRow[] = (data.list || []).map((item) => ({
+    sjDiv: item.sj_div,
+    sjNm: item.sj_nm,
+    accountId: item.account_id,
+    accountNm: item.account_nm,
+    accountDetail: item.account_detail,
+    thstrmAmount: item.thstrm_amount,
+    thstrmNm: item.thstrm_nm,
+    bfefrmtrmAmount: item.bfefrmtrm_amount,
+    bfefrmtrmNm: item.bfefrmtrm_nm,
+    ord: item.ord,
+  }));
+
+  return {
+    status: data.status,
+    message: data.message,
+    rows,
+  };
+}
