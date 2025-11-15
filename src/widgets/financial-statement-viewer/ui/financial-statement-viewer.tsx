@@ -5,7 +5,11 @@ import { FinancialStatementFilter } from "@/features/financial-statement-filter"
 import type { FinancialStatementFilterParams } from "@/features/financial-statement-filter";
 import { useFinancialStatementQuery } from "@/entities/financial-statement";
 import { FinancialStatementTable } from "./components/financial-statement-table";
-import { LoadingState, ErrorState, EmptyState } from "./components/result-states";
+import {
+  LoadingState,
+  ErrorState,
+  EmptyState,
+} from "./components/result-states";
 
 export function FinancialStatementViewer() {
   const [searchParams, setSearchParams] =
@@ -56,7 +60,8 @@ export function FinancialStatementViewer() {
         {searchParams && data && !isLoading && !error && (
           <FinancialStatementTable
             rows={data.rows}
-            sjDiv={searchParams.sjDiv}
+            reprtCode={searchParams.reprtCode}
+            bsnsYear={searchParams.bsnsYear}
           />
         )}
       </section>
