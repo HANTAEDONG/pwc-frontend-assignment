@@ -27,6 +27,7 @@ const maxWidthClasses = {
   xl: "max-w-xl",
   "2xl": "max-w-2xl",
   "640px": "max-w-[640px]",
+  "1000px": "max-w-[1000px]",
 };
 
 function DeleteFavoriteDialogContent({ onClose }: DialogContentProps) {
@@ -183,44 +184,28 @@ function FavoriteDetailDialogContent({ payload, onClose }: DialogContentProps) {
     } catch {}
   };
 
-  const handleClose = () => {
-    setIsEditMode(false);
-    if (data) {
-      reset({
-        memo: data.memo || "",
-      });
-    }
-    onClose();
-  };
-
   if (!payload?.favoriteId) return null;
 
   return (
-    <div className="p-6">
-      <div className="flex justify-end mb-4">
-        <button
-          onClick={handleClose}
-          className="text-gray-400 hover:text-gray-600 transition-colors"
-          aria-label="닫기"
-        >
-          <X className="w-5 h-5" />
-        </button>
+    <div>
+      <div className="flex items-center border-b border-[#C6C6C8] px-5 py-2 gap-[10px]">
+        <h2 className="text-2xl font-bold text-gray-900 leading-[1.4166666666666667em] whitespace-nowrap flex-shrink-0">
+          {data?.company_name || ""}
+        </h2>
       </div>
 
       {isEditMode ? (
         <form onSubmit={handleSubmit(onSubmit)}>
-          <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">
-            {data?.company_name || ""}
-          </h2>
-          <div className="mb-6">
-            <textarea
-              {...register("memo")}
-              rows={8}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md resize-none focus:outline-none focus:ring-0 focus:border-[#FF8700]"
-              placeholder="기업에 대한 메모를 입력하세요"
-            />
+          <div className="px-5 py-4">
+            <div className="mb-6">
+              <textarea
+                {...register("memo")}
+                className="w-full h-[280px] px-4 py-4 border border-[#C6C6C8] rounded-md resize-none focus:outline-none focus:ring-0 focus:border-[#FF8700] text-base leading-[1.5em] text-[#3E3E3E]"
+                placeholder="기업에 대한 메모를 입력하세요"
+              />
+            </div>
           </div>
-          <div className="flex justify-end gap-2">
+          <div className="flex items-center justify-end gap-3 px-5 py-5">
             <Button
               type="button"
               onClick={handleCancel}
@@ -233,7 +218,7 @@ function FavoriteDetailDialogContent({ payload, onClose }: DialogContentProps) {
             <Button
               type="submit"
               variant="fill"
-              className="bg-black hover:bg-gray-800 text-white"
+              className="bg-black hover:bg-gray-800 text-white px-4 py-2 gap-2 rounded"
               disabled={updateMutation.isPending}
             >
               저장하기
@@ -248,24 +233,23 @@ function FavoriteDetailDialogContent({ payload, onClose }: DialogContentProps) {
             </div>
           ) : (
             <>
-              <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">
-                {data?.company_name || ""}
-              </h2>
-              <div className="mb-6">
-                <div className="border border-gray-200 rounded-lg p-4 min-h-[200px]">
-                  <p className="text-sm text-gray-700 whitespace-pre-wrap">
-                    {data?.memo || "메모가 없습니다."}
-                  </p>
+              <div className="px-5 py-4">
+                <div className="mb-6">
+                  <div className="border border-[#C6C6C8] rounded-md p-4 min-h-[200px]">
+                    <p className="text-base leading-[1.5em] text-[#3E3E3E] whitespace-pre-wrap">
+                      {data?.memo || "메모가 없습니다."}
+                    </p>
+                  </div>
                 </div>
               </div>
-              <div className="flex justify-end">
+              <div className="flex items-center justify-end gap-3 px-5 py-5">
                 <Button
                   onClick={handleEdit}
                   variant="fill"
-                  className="bg-black hover:bg-gray-800 text-white gap-2"
+                  className="bg-black hover:bg-gray-800 text-white px-4 py-2 gap-2 rounded"
                   leftIcon={
                     <svg
-                      className="w-4 h-4"
+                      className="w-5 h-5"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -297,19 +281,19 @@ function FavoriteFormDialogContent({ payload, onClose }: DialogContentProps) {
 
   return (
     <div>
-      <div className="flex items-center justify-between h-14 border-b border-gray-200 px-6 py-[5px] gap-[10px]">
-        <h2 className="text-2xl font-bold text-gray-900">
+      <div className="flex items-center justify-between border-b border-[#C6C6C8] px-5 py-2 gap-[10px]">
+        <h2 className="text-2xl font-bold text-gray-900 leading-[1.4166666666666667em] whitespace-nowrap flex-shrink-0">
           {payload?.editingId ? "관심기업 수정" : "관심기업 생성"}
         </h2>
         <button
           onClick={onClose}
-          className="text-gray-900 hover:text-gray-700 transition-colors"
+          className="text-gray-900 hover:text-gray-700 transition-colors flex-shrink-0"
           aria-label="닫기"
         >
-          <X className="w-5 h-5" />
+          <X className="w-6 h-6" />
         </button>
       </div>
-      <div className="px-6 pt-4 pb-6">
+      <div className="px-5 py-4">
         <FavoriteForm
           email={DEFAULT_EMAIL}
           favoriteId={payload?.editingId}
@@ -411,7 +395,7 @@ export function GlobalDialog() {
       case "favoriteDetail":
         return "2xl";
       case "favoriteForm":
-        return "640px";
+        return "1000px";
       default:
         return "sm";
     }
