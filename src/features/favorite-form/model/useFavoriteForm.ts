@@ -2,12 +2,16 @@
 
 import { useRef } from "react";
 import { useForm } from "react-hook-form";
+import { useQueryClient } from "@tanstack/react-query";
 import type { CompanySearchDropdownRef } from "@/features/company-search";
 import {
   useCreateFavoriteCompany,
   useUpdateFavoriteCompany,
   useFavoriteCompaniesQuery,
+  favoriteQueryKeys,
 } from "@/entities/favorite/queries";
+import type { PaginatedFavoriteCompanyResponse } from "@/entities/favorite/api";
+import { getFavoriteCompanies } from "@/entities/favorite/api";
 
 export interface FavoriteFormData {
   companyName: string;
@@ -39,11 +43,12 @@ export function useFavoriteForm({
   const createMutation = useCreateFavoriteCompany();
   const updateMutation = useUpdateFavoriteCompany();
   const dropdownRef = useRef<CompanySearchDropdownRef>(null);
+  const queryClient = useQueryClient();
 
   const isEditMode = !!favoriteId;
 
-  const { data: favoriteCompaniesData } = useFavoriteCompaniesQuery(
-    { email },
+  const { data: firstPageData } = useFavoriteCompaniesQuery(
+    { email, page: 1 },
     { enabled: !isEditMode }
   );
 
@@ -80,13 +85,57 @@ export function useFavoriteForm({
       dropdownRef.current?.close();
       onSuccess?.();
     } catch {
-      // 에러는 mutation에서 처리됨
+      console.error("Favorite form submission error");
     }
   };
 
-  const handleCompanySelect = (companyName: string) => {
-    if (!isEditMode && favoriteCompaniesData) {
-      const existingCompany = favoriteCompaniesData.items.find(
+  const handleCompanySelect = async (companyName: string) => {
+    if (!isEditMode) {
+      if (firstPageData && firstPageData.total_pages > 1) {
+        const missingPages: Promise<PaginatedFavoriteCompanyResponse>[] = [];
+
+        for (let page = 2; page <= firstPageData.total_pages; page++) {
+          const cachedData =
+            queryClient.getQueryData<PaginatedFavoriteCompanyResponse>(
+              favoriteQueryKeys.list(email, page)
+            );
+
+          if (!cachedData) {
+            missingPages.push(
+              queryClient.fetchQuery({
+                queryKey: favoriteQueryKeys.list(email, page),
+                queryFn: () => getFavoriteCompanies({ email, page }),
+              })
+            );
+          }
+        }
+
+        if (missingPages.length > 0) {
+          await Promise.all(missingPages);
+        }
+      }
+
+      if (!firstPageData) {
+        clearErrors("companyName");
+        setValue("companyName", companyName, { shouldValidate: true });
+        return;
+      }
+
+      const allPages: PaginatedFavoriteCompanyResponse[] = [firstPageData];
+      const totalPages = firstPageData.total_pages;
+
+      for (let page = 2; page <= totalPages; page++) {
+        const cachedData =
+          queryClient.getQueryData<PaginatedFavoriteCompanyResponse>(
+            favoriteQueryKeys.list(email, page)
+          );
+        if (cachedData) {
+          allPages.push(cachedData);
+        }
+      }
+
+      const allItems = allPages.flatMap((pageData) => pageData.items);
+      const existingCompany = allItems.find(
         (item) => item.company_name === companyName
       );
 
