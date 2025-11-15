@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { X, XCircle } from "lucide-react";
+import { X, XCircle, Pencil } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { useUiDialog } from "@/entities/ui";
 import type { UiDialogPayload } from "@/entities/ui";
@@ -164,7 +164,7 @@ function FavoriteDetailDialogContent({ payload, onClose }: DialogContentProps) {
 
   return (
     <div>
-      <div className="flex items-center gap-2.5 border-b border-gray-border px-5 py-2">
+      <div className="flex items-center justify-center gap-2.5 border-b border-gray-border px-5 py-2">
         <h2 className="text-2xl font-bold text-gray-900 leading-[1.4166666666666667em] whitespace-nowrap flex-shrink-0">
           {data?.company_name || ""}
         </h2>
@@ -192,7 +192,7 @@ function FavoriteDetailDialogContent({ payload, onClose }: DialogContentProps) {
             </Button>
             <Button
               type="submit"
-              variant="primary"
+              variant="secondary"
               disabled={updateMutation.isPending}
             >
               저장하기
@@ -219,22 +219,8 @@ function FavoriteDetailDialogContent({ payload, onClose }: DialogContentProps) {
               <div className="flex items-center justify-end gap-3 px-5 py-5">
                 <Button
                   onClick={handleEdit}
-                  variant="primary"
-                  leftIcon={
-                    <svg
-                      className="h-5 w-5"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                      />
-                    </svg>
-                  }
+                  variant="secondary"
+                  leftIcon={<Pencil className="h-5 w-5" />}
                 >
                   수정하기
                 </Button>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { X } from "lucide-react";
+import { X, Pencil } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { Button, Modal } from "@/shared/ui";
 import {
@@ -147,7 +147,7 @@ export function DetailModal({
               </Button>
               <Button
                 type="submit"
-                variant="primary"
+                variant="secondary"
                 disabled={updateMutation.isPending}
               >
                 저장하기
@@ -155,7 +155,6 @@ export function DetailModal({
             </div>
           </form>
         ) : (
-          /* 조회 모드 */
           <div>
             {isLoading ? (
               <div className="flex items-center justify-center py-12">
@@ -176,22 +175,8 @@ export function DetailModal({
                 <div className="flex justify-end">
                   <Button
                     onClick={handleEdit}
-                    variant="primary"
-                    leftIcon={
-                      <svg
-                        className="h-4 w-4"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                        />
-                      </svg>
-                    }
+                    variant="secondary"
+                    leftIcon={<Pencil className="h-4 w-4" />}
                   >
                     수정하기
                   </Button>
