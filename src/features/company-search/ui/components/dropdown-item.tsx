@@ -1,18 +1,25 @@
 import { cn } from "@/shared/lib/utils";
+import type { CompanyInfo } from "@/entities/company/api";
 
 interface DropdownItemProps {
-  companyName: string;
+  company: string | CompanyInfo;
   isSelected: boolean;
   onClick: () => void;
   onRef: (el: HTMLLIElement | null) => void;
+  useDartApi: boolean;
 }
 
 export function DropdownItem({
-  companyName,
+  company,
   isSelected,
   onClick,
   onRef,
+  useDartApi,
 }: DropdownItemProps) {
+  const displayName = useDartApi
+    ? (company as CompanyInfo).corp_name
+    : (company as string);
+
   return (
     <li
       ref={onRef}
@@ -24,7 +31,7 @@ export function DropdownItem({
         isSelected ? "bg-[#FFB27F] text-white" : "hover:bg-gray-50"
       )}
     >
-      {companyName}
+      {displayName}
     </li>
   );
 }

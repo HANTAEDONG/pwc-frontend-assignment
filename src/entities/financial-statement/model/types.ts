@@ -35,9 +35,12 @@ export interface FinancialStatementRow {
   accountDetail: string;
   thstrmAmount: string;
   thstrmNm: string;
+  frmtrmAmount: string;
+  frmtrmNm: string;
   bfefrmtrmAmount: string;
   bfefrmtrmNm: string;
   ord: string;
+  currency: string;
 }
 
 export interface FinancialStatementResponse {

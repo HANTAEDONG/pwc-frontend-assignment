@@ -2,7 +2,7 @@ import axios from "axios";
 import { AppError } from "./AppError";
 
 export const dartHttpClient = axios.create({
-  baseURL: "https://opendart.fss.or.kr/api",
+  baseURL: "/api/dart",
   headers: {
     "Content-Type": "application/json",
   },

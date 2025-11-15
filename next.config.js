@@ -20,6 +20,14 @@ const nextConfig = {
       },
     ];
   },
+  async rewrites() {
+    return [
+      {
+        source: "/api/dart/:path*",
+        destination: "https://opendart.fss.or.kr/api/:path*",
+      },
+    ];
+  },
 
   experimental: {
     optimizeCss: true,

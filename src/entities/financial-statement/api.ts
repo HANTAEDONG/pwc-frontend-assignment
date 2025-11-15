@@ -33,12 +33,11 @@ export async function getFinancialStatement(
   const data = response.data;
 
   if (data.status !== "000") {
-    throw new AppError(
-      data.message || "Failed to fetch financial statement",
-      data.status,
-      undefined,
-      data
-    );
+    const errorMessage =
+      data.status === "013"
+        ? "조회된 데이터가 없습니다. 기업코드, 사업연도, 보고서명을 확인해주세요."
+        : data.message || "재무제표 조회에 실패했습니다.";
+    throw new AppError(errorMessage, data.status, undefined, data);
   }
 
   const rows: FinancialStatementRow[] = (data.list || []).map((item) => ({
@@ -49,9 +48,12 @@ export async function getFinancialStatement(
     accountDetail: item.account_detail,
     thstrmAmount: item.thstrm_amount,
     thstrmNm: item.thstrm_nm,
+    frmtrmAmount: item.frmtrm_amount,
+    frmtrmNm: item.frmtrm_nm,
     bfefrmtrmAmount: item.bfefrmtrm_amount,
     bfefrmtrmNm: item.bfefrmtrm_nm,
     ord: item.ord,
+    currency: item.currency,
   }));
 
   return {
