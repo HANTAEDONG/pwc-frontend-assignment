@@ -1,77 +1,101 @@
 "use client";
 
-import { useFavorites, useDeleteFavorite } from "@/entities/favorite";
-import { Button } from "@/shared/ui";
+import { useImperativeHandle, forwardRef } from "react";
+import { useFavoriteTable, useFavoriteTableState } from "../model";
+import { TableContainer } from "./components/table-container";
+import { TableHeader } from "./components/table-header";
+import { TableBody } from "./components/table-body";
+import { Pagination } from "./components/pagination";
 
 export interface FavoriteTableProps {
-  onEdit?: (id: string) => void;
+  searchQuery?: string;
+  companyColumnClassName?: string;
+  createdColumnClassName?: string;
 }
 
-export function FavoriteTable({ onEdit }: FavoriteTableProps) {
-  const { data: favorites, isLoading, error } = useFavorites();
-  const deleteMutation = useDeleteFavorite();
-
-  const handleDelete = async (id: string) => {
-    if (confirm("정말 삭제하시겠습니까?")) {
-      try {
-        await deleteMutation.mutateAsync(id);
-      } catch {
-        // 에러 처리
-      }
-    }
-  };
-
-  if (isLoading) {
-    return <div>로딩 중...</div>;
-  }
-
-  if (error) {
-    return <div role="alert">데이터를 불러오는 중 오류가 발생했습니다.</div>;
-  }
-
-  if (!favorites || favorites.length === 0) {
-    return <div>등록된 관심 기업이 없습니다.</div>;
-  }
-
-  return (
-    <section>
-      <h2>관심 기업 목록</h2>
-      <table>
-        <caption className="sr-only">관심 기업 목록 테이블</caption>
-        <thead>
-          <tr>
-            <th scope="col">기업명</th>
-            <th scope="col">등록일</th>
-            <th scope="col">작업</th>
-          </tr>
-        </thead>
-        <tbody>
-          {favorites.map((favorite) => (
-            <tr key={favorite.id}>
-              <td>{favorite.companyName}</td>
-              <td>{new Date().toLocaleDateString()}</td>
-              <td>
-                {onEdit && (
-                  <Button
-                    onClick={() => onEdit(favorite.id)}
-                    variant="secondary"
-                    size="sm"
-                  >
-                    수정
-                  </Button>
-                )}
-                <Button
-                  onClick={() => handleDelete(favorite.id)}
-                  variant="danger"
-                  size="sm"
-                >
-                  삭제
-                </Button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </section>
-  );
+export interface FavoriteTableRef {
+  getSelectedIds: () => number[];
+  deleteSelected: () => void;
 }
+
+export const FavoriteTable = forwardRef<FavoriteTableRef, FavoriteTableProps>(
+  function FavoriteTable(
+    {
+      searchQuery: externalSearchQuery,
+      companyColumnClassName = "w-[55%]",
+      createdColumnClassName = "w-[25%]",
+    },
+    ref
+  ) {
+    const {
+      filteredItems,
+      isLoading,
+      error,
+      searchQuery,
+      deleteMutation,
+      handleRetry,
+      data,
+      page,
+    } = useFavoriteTable({ searchQuery: externalSearchQuery });
+
+    const {
+      selectedIds,
+      allSelected,
+      handleSelectAll,
+      handleSelectRow,
+      handleDeleteClick,
+      handleDeleteSelected,
+      handleCompanyClick,
+      handlePageChange,
+      shouldShowPagination,
+      getSelectedIds,
+    } = useFavoriteTableState({
+      filteredItems,
+      deleteMutation,
+      data,
+    });
+
+    useImperativeHandle(ref, () => ({
+      getSelectedIds,
+      deleteSelected: handleDeleteSelected,
+    }));
+
+    return (
+      <>
+        <TableContainer>
+          <TableHeader
+            allSelected={allSelected}
+            onSelectAll={handleSelectAll}
+            companyColumnClassName={companyColumnClassName}
+            createdColumnClassName={createdColumnClassName}
+          />
+          <tbody className="bg-white">
+            <TableBody
+              isLoading={isLoading}
+              error={error as Error | null}
+              items={filteredItems}
+              searchQuery={searchQuery || undefined}
+              onRetry={handleRetry}
+              onDelete={handleDeleteClick}
+              onCompanyClick={handleCompanyClick}
+              isDeleting={deleteMutation.isPending}
+              companyColumnClassName={companyColumnClassName}
+              createdColumnClassName={createdColumnClassName}
+              selectedIds={selectedIds}
+              onSelectRow={handleSelectRow}
+            />
+          </tbody>
+        </TableContainer>
+        {shouldShowPagination && data && (
+          <div className="w-full flex justify-center mt-4">
+            <Pagination
+              currentPage={page}
+              totalPages={data.total_pages}
+              onPageChange={handlePageChange}
+            />
+          </div>
+        )}
+      </>
+    );
+  }
+);

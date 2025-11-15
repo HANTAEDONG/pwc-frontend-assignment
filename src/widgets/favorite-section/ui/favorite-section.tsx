@@ -1,47 +1,36 @@
 "use client";
 
-import { useState } from "react";
-import { FavoriteForm } from "@/features/favorite-form";
-import { FavoriteTable } from "@/features/favorite-table";
-import { useFavorite } from "@/entities/favorite";
+import { Suspense, useRef, forwardRef, useImperativeHandle } from "react";
 
-const DEFAULT_EMAIL = "test@example.com";
+import {
+  FavoriteTable,
+  type FavoriteTableRef,
+} from "@/features/favorite-table";
 
-export function FavoriteSection() {
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const { data: favorite } = useFavorite(editingId || "", {
-    enabled: !!editingId,
-  });
+import { FavoriteTableSkeleton } from "./favorite-table-skeleton";
 
-  const handleEdit = (id: string) => {
-    setEditingId(id);
-  };
+export interface FavoriteSectionRef {
+  getTableRef: () => FavoriteTableRef | null;
+}
 
-  const handleSuccess = () => {
-    setEditingId(null);
-  };
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+export interface FavoriteSectionProps {}
+
+export const FavoriteSection = forwardRef<
+  FavoriteSectionRef,
+  FavoriteSectionProps
+>(function FavoriteSection(_, ref) {
+  const tableRef = useRef<FavoriteTableRef>(null);
+
+  useImperativeHandle(ref, () => ({
+    getTableRef: () => tableRef.current,
+  }));
 
   return (
-    <section>
-      <h2>관심 기업 관리</h2>
-      <article>
-        <h3>{editingId ? "관심 기업 수정" : "관심 기업 등록"}</h3>
-        <FavoriteForm
-          email={DEFAULT_EMAIL}
-          favoriteId={editingId || undefined}
-          initialData={
-            favorite
-              ? {
-                  companyName: favorite.company_name,
-                }
-              : undefined
-          }
-          onSuccess={handleSuccess}
-        />
-      </article>
-      <article>
-        <FavoriteTable onEdit={handleEdit} />
-      </article>
+    <section className="w-full">
+      <Suspense fallback={<FavoriteTableSkeleton />}>
+        <FavoriteTable ref={tableRef} />
+      </Suspense>
     </section>
   );
-}
+});

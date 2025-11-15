@@ -1,11 +1,12 @@
 import axios from "axios";
+import { env } from "@/shared/config/env";
 import {
   setupRequestInterceptor,
   setupResponseInterceptor,
 } from "./interceptors";
 
 export const httpClient = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_BASE_URL || "",
+  baseURL: env.apiBaseUrl,
   headers: {
     "Content-Type": "application/json",
   },

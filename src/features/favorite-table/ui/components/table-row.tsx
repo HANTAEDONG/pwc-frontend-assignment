@@ -1,0 +1,124 @@
+import { ICONS } from "@/shared/ui/icons";
+import { cn, formatDate } from "@/shared/lib/utils";
+
+import type { FavoriteCompanyListItem } from "@/entities/favorite/api";
+
+interface TableRowProps {
+  item: FavoriteCompanyListItem;
+  onDelete: (id: number) => void;
+  onCompanyClick?: (id: number) => void;
+  isDeleting: boolean;
+  companyColumnClassName: string;
+  createdColumnClassName: string;
+  isChecked: boolean;
+  onSelect: (checked: boolean) => void;
+  isLast?: boolean;
+}
+
+export function TableRow({
+  item,
+  onDelete,
+  onCompanyClick,
+  isDeleting,
+  companyColumnClassName,
+  createdColumnClassName,
+  isChecked,
+  onSelect,
+  isLast = false,
+}: TableRowProps) {
+  return (
+    <tr
+      className={cn(
+        "h-[50px] focus-within:bg-gray-50",
+        isChecked ? "bg-[#FFF4E6]" : "hover:bg-gray-50"
+      )}
+    >
+      <td
+        className={cn(
+          "h-[50px] w-[60px] px-[15px]",
+          !isLast && "border-b border-[#C6C6C8]"
+        )}
+      >
+        <label className="relative inline-block cursor-pointer">
+          <input
+            type="checkbox"
+            checked={isChecked}
+            onChange={(e) => onSelect(e.target.checked)}
+            className="sr-only"
+            aria-label={`${item.company_name} 선택`}
+          />
+          <div
+            className={cn(
+              "h-5 w-5 rounded-sm border transition-colors flex items-center justify-center",
+              isChecked
+                ? "bg-[#FF8700] border-[#FF8700]"
+                : "bg-white border-[#C6C6C8]"
+            )}
+          >
+            {isChecked && (
+              <svg
+                className="h-3 w-3 text-white"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={3}
+                  d="M5 13l4 4L19 7"
+                />
+              </svg>
+            )}
+          </div>
+        </label>
+      </td>
+      <td
+        className={cn(
+          "h-[50px] px-4 align-middle",
+          !isLast && "border-b border-[#C6C6C8]",
+          companyColumnClassName
+        )}
+      >
+        <button
+          onClick={() => onCompanyClick?.(item.id)}
+          className="truncate font-sans font-normal text-sm leading-normal tracking-normal text-gray-900 align-middle text-left w-full hover:text-gray-600 transition-colors cursor-pointer"
+        >
+          {item.company_name}
+        </button>
+      </td>
+      <td
+        className={cn(
+          "h-[50px] px-4 align-middle",
+          !isLast && "border-b border-[#C6C6C8]",
+          createdColumnClassName
+        )}
+      >
+        <span className="block whitespace-nowrap font-sans font-normal text-sm leading-normal tracking-normal text-gray-900 align-middle">
+          {formatDate(item.created_at)}
+        </span>
+      </td>
+      <td
+        className={cn(
+          "h-[50px] w-[74px] px-4 text-center",
+          !isLast && "border-b border-[#C6C6C8]"
+        )}
+      >
+        <button
+          onClick={() => onDelete(item.id)}
+          className="text-[#C6C6C8] transition-colors hover:text-gray-600"
+          aria-label={`${item.company_name} 삭제`}
+          disabled={isDeleting}
+        >
+          {ICONS.trash1}
+        </button>
+      </td>
+      <td
+        className={cn(
+          "h-[50px] w-[17px] px-2",
+          !isLast && "border-b border-[#C6C6C8]"
+        )}
+      ></td>
+    </tr>
+  );
+}

@@ -8,8 +8,9 @@ import type {
   MessageResponse,
 } from "@/entities/favorite/api";
 import type { HTTPValidationError } from "@/shared/api/types";
+import { env } from "@/shared/config/env";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "";
+const API_BASE_URL = env.apiBaseUrl;
 
 const randomDelay = () => delay(Math.random() * 300 + 200);
 
