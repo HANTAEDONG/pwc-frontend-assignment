@@ -12,12 +12,12 @@ export function SkeletonHeader({
   return (
     <thead className="bg-gray-50">
       <tr className="h-[50px]">
-        <th className="h-[50px] border-b border-[#C6C6C8] px-[15px] w-[60px]">
+        <th className="h-[50px] w-[60px] border-b border-gray-border px-[15px]">
           <div className="h-4 w-4 rounded bg-gray-200" />
         </th>
         <th
           className={cn(
-            "h-[50px] border-b border-[#C6C6C8] px-4",
+            "h-[50px] border-b border-gray-border px-4",
             companyColumnClassName
           )}
         >
@@ -25,16 +25,16 @@ export function SkeletonHeader({
         </th>
         <th
           className={cn(
-            "h-[50px] border-b border-[#C6C6C8] px-4",
+            "h-[50px] border-b border-gray-border px-4",
             createdColumnClassName
           )}
         >
           <div className="h-4 w-full rounded bg-gray-200" />
         </th>
-        <th className="h-[50px] border-b border-[#C6C6C8] px-4 w-[74px]">
+        <th className="h-[50px] w-[74px] border-b border-gray-border px-4">
           <div className="h-4 w-full rounded bg-gray-200" />
         </th>
-        <th className="h-[50px] border-b border-[#C6C6C8] px-2 w-[17px]">
+        <th className="h-[50px] w-[17px] border-b border-gray-border px-2">
           <div className="h-4 w-full rounded bg-gray-200" />
         </th>
       </tr>

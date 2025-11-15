@@ -10,7 +10,7 @@ export function LoadingState({
 }: LoadingStateProps) {
   return (
     <div className="flex flex-col items-center justify-center py-16">
-      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mb-4"></div>
+      <div className="mb-4 h-12 w-12 animate-spin rounded-full border-b-2 border-primary"></div>
       <p className="text-gray-600">{message}</p>
     </div>
   );
@@ -27,9 +27,9 @@ export function ErrorState({
 }: ErrorStateProps) {
   return (
     <div className="flex flex-col items-center justify-center py-16">
-      <div className="text-red-500 mb-4">
+      <div className="mb-4 text-danger">
         <svg
-          className="w-12 h-12"
+          className="h-12 w-12"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"

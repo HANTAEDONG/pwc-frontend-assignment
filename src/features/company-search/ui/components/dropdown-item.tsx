@@ -27,8 +27,10 @@ export function DropdownItem({
       aria-selected={isSelected}
       onClick={onClick}
       className={cn(
-        "w-full h-10 px-3 py-4 text-sm transition-colors rounded-[2px] cursor-pointer flex items-center",
-        isSelected ? "bg-[#FFB27F] text-white" : "hover:bg-gray-50"
+        "flex h-10 w-full cursor-pointer items-center rounded-xs px-3 py-4 text-sm text-gray-text transition-colors",
+        isSelected
+          ? "bg-primary-light text-primary-foreground"
+          : "hover:bg-gray-50"
       )}
     >
       {displayName}

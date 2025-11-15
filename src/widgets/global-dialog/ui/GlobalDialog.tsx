@@ -5,13 +5,12 @@ import { X, XCircle } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { useUiDialog } from "@/entities/ui";
 import type { UiDialogPayload } from "@/entities/ui";
-import { Button } from "@/shared/ui";
+import { Button, Modal } from "@/shared/ui";
 import { FavoriteForm } from "@/features/favorite-form/ui/favorite-form";
 import {
   useFavoriteCompanyDetailQuery,
   useUpdateFavoriteCompany,
 } from "@/entities/favorite/queries";
-import { cn } from "@/shared/lib/utils";
 
 interface DialogContentProps {
   payload: UiDialogPayload | null;
@@ -20,15 +19,7 @@ interface DialogContentProps {
 
 const DEFAULT_EMAIL = "htd0913@gmail.com";
 
-const maxWidthClasses = {
-  sm: "max-w-sm",
-  md: "max-w-md",
-  lg: "max-w-lg",
-  xl: "max-w-xl",
-  "2xl": "max-w-2xl",
-  "640px": "max-w-[640px]",
-  "1000px": "max-w-[1000px]",
-};
+type DialogMaxWidth = "sm" | "md" | "lg" | "xl" | "2xl" | "1000px";
 
 function DeleteFavoriteDialogContent({ onClose }: DialogContentProps) {
   return (
@@ -40,20 +31,12 @@ function DeleteFavoriteDialogContent({ onClose }: DialogContentProps) {
         </p>
       </div>
       <div className="flex justify-end gap-2">
-        <button
-          type="button"
-          onClick={onClose}
-          className="rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50"
-        >
+        <Button type="button" variant="outline" onClick={onClose}>
           취소
-        </button>
-        <button
-          type="button"
-          onClick={onClose}
-          className="rounded-md bg-red-500 px-3 py-2 text-sm text-white hover:bg-red-600"
-        >
+        </Button>
+        <Button type="button" variant="danger" onClick={onClose}>
           삭제
-        </button>
+        </Button>
       </div>
     </div>
   );
@@ -73,17 +56,18 @@ function DeleteFavoriteConfirmDialogContent({
   return (
     <div className="p-6">
       <div className="flex justify-end mb-4">
-        <button
+        <Button
           onClick={onClose}
-          className="text-gray-400 hover:text-gray-600 transition-colors"
+          variant="ghost"
+          className="h-auto w-auto p-0 text-gray-400 hover:text-gray-600"
           aria-label="닫기"
         >
-          <X className="w-5 h-5" />
-        </button>
+          <X className="h-5 w-5" />
+        </Button>
       </div>
       <div className="flex flex-col items-center mb-6">
-        <div className="w-16 h-16 rounded-full bg-pink-100  flex items-center justify-center mb-4">
-          <XCircle className="w-8 h-8 text-red-600" />
+        <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-danger-surface text-danger">
+          <XCircle className="h-8 w-8" />
         </div>
         <h3 className="text-lg font-bold text-gray-900 mb-2">
           총 {payload?.count ?? 0}개 삭제하시겠습니까?
@@ -94,18 +78,10 @@ function DeleteFavoriteConfirmDialogContent({
         <p className="text-sm text-gray-600">정말 삭제하시겠습니까?</p>
       </div>
       <div className="flex flex-col gap-2">
-        <Button
-          onClick={handleConfirm}
-          variant="fill"
-          className="bg-gray-800 hover:bg-gray-900 text-white w-full"
-        >
+        <Button onClick={handleConfirm} variant="danger" className="w-full">
           삭제
         </Button>
-        <Button
-          onClick={onClose}
-          variant="outline"
-          className="w-full border-gray-300 text-gray-700"
-        >
+        <Button onClick={onClose} variant="outline" className="w-full">
           취소
         </Button>
       </div>
@@ -188,7 +164,7 @@ function FavoriteDetailDialogContent({ payload, onClose }: DialogContentProps) {
 
   return (
     <div>
-      <div className="flex items-center border-b border-[#C6C6C8] px-5 py-2 gap-[10px]">
+      <div className="flex items-center gap-2.5 border-b border-gray-border px-5 py-2">
         <h2 className="text-2xl font-bold text-gray-900 leading-[1.4166666666666667em] whitespace-nowrap flex-shrink-0">
           {data?.company_name || ""}
         </h2>
@@ -200,7 +176,7 @@ function FavoriteDetailDialogContent({ payload, onClose }: DialogContentProps) {
             <div className="mb-6">
               <textarea
                 {...register("memo")}
-                className="w-full h-[280px] px-4 py-4 border border-[#C6C6C8] rounded-md resize-none focus:outline-none focus:ring-0 focus:border-[#FF8700] text-base leading-[1.5em] text-[#3E3E3E]"
+                className="h-[280px] w-full resize-none rounded-md border border-gray-border px-4 py-4 text-base leading-relaxed text-gray-text focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
                 placeholder="기업에 대한 메모를 입력하세요"
               />
             </div>
@@ -210,15 +186,13 @@ function FavoriteDetailDialogContent({ payload, onClose }: DialogContentProps) {
               type="button"
               onClick={handleCancel}
               variant="outline"
-              className="border-gray-300 text-gray-700"
               disabled={updateMutation.isPending}
             >
               취소하기
             </Button>
             <Button
               type="submit"
-              variant="fill"
-              className="bg-black hover:bg-gray-800 text-white px-4 py-2 gap-2 rounded"
+              variant="primary"
               disabled={updateMutation.isPending}
             >
               저장하기
@@ -235,8 +209,8 @@ function FavoriteDetailDialogContent({ payload, onClose }: DialogContentProps) {
             <>
               <div className="px-5 py-4">
                 <div className="mb-6">
-                  <div className="border border-[#C6C6C8] rounded-md p-4 min-h-[200px]">
-                    <p className="text-base leading-[1.5em] text-[#3E3E3E] whitespace-pre-wrap">
+                  <div className="min-h-[200px] rounded-md border border-gray-border p-4">
+                    <p className="text-base leading-relaxed text-gray-text whitespace-pre-wrap">
                       {data?.memo || "메모가 없습니다."}
                     </p>
                   </div>
@@ -245,11 +219,10 @@ function FavoriteDetailDialogContent({ payload, onClose }: DialogContentProps) {
               <div className="flex items-center justify-end gap-3 px-5 py-5">
                 <Button
                   onClick={handleEdit}
-                  variant="fill"
-                  className="bg-black hover:bg-gray-800 text-white px-4 py-2 gap-2 rounded"
+                  variant="primary"
                   leftIcon={
                     <svg
-                      className="w-5 h-5"
+                      className="h-5 w-5"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -281,17 +254,18 @@ function FavoriteFormDialogContent({ payload, onClose }: DialogContentProps) {
 
   return (
     <div>
-      <div className="flex items-center justify-between border-b border-[#C6C6C8] px-5 py-2 gap-[10px]">
+      <div className="flex items-center justify-between gap-2.5 border-b border-gray-border px-5 py-2">
         <h2 className="text-2xl font-bold text-gray-900 leading-[1.4166666666666667em] whitespace-nowrap flex-shrink-0">
           {payload?.editingId ? "관심기업 수정" : "관심기업 생성"}
         </h2>
-        <button
+        <Button
           onClick={onClose}
-          className="text-gray-900 hover:text-gray-700 transition-colors flex-shrink-0"
+          variant="ghost"
+          className="h-auto w-auto flex-shrink-0 p-0 text-gray-900 hover:text-gray-700"
           aria-label="닫기"
         >
-          <X className="w-6 h-6" />
-        </button>
+          <X className="h-6 w-6" />
+        </Button>
       </div>
       <div className="px-5 py-4">
         <FavoriteForm
@@ -317,20 +291,12 @@ function LogoutDialogContent({ onClose }: DialogContentProps) {
         <p className="mt-2 text-sm text-gray-600">정말 로그아웃하시겠습니까?</p>
       </div>
       <div className="flex justify-end gap-2">
-        <button
-          type="button"
-          onClick={onClose}
-          className="rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50"
-        >
+        <Button type="button" variant="outline" onClick={onClose}>
           취소
-        </button>
-        <button
-          type="button"
-          onClick={onClose}
-          className="rounded-md bg-blue-500 px-3 py-2 text-sm text-white hover:bg-blue-600"
-        >
+        </Button>
+        <Button type="button" variant="secondary" onClick={onClose}>
           로그아웃
-        </button>
+        </Button>
       </div>
     </div>
   );
@@ -349,13 +315,9 @@ function GlobalErrorDialogContent({ payload, onClose }: DialogContentProps) {
         </p>
       </div>
       <div className="flex justify-end">
-        <button
-          type="button"
-          onClick={onClose}
-          className="rounded-md bg-blue-500 px-3 py-2 text-sm text-white hover:bg-blue-600"
-        >
+        <Button type="button" variant="primary" onClick={onClose}>
           확인
-        </button>
+        </Button>
       </div>
     </div>
   );
@@ -364,31 +326,11 @@ function GlobalErrorDialogContent({ payload, onClose }: DialogContentProps) {
 export function GlobalDialog() {
   const { activeDialog, dialogPayload, closeDialog } = useUiDialog();
 
-  useEffect(() => {
-    if (activeDialog !== "none") {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
-
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [activeDialog]);
-
   if (activeDialog === "none") {
     return null;
   }
 
-  const handleOverlayClick = () => {
-    closeDialog();
-  };
-
-  const handleContentClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-  };
-
-  const getMaxWidth = (): keyof typeof maxWidthClasses => {
+  const getMaxWidth = (): DialogMaxWidth => {
     switch (activeDialog) {
       case "deleteFavoriteConfirm":
         return "md";
@@ -449,32 +391,20 @@ export function GlobalDialog() {
 
   const maxWidth = getMaxWidth();
   const contentClassName =
-    activeDialog === "favoriteDetail" ? "max-h-[90vh] overflow-y-auto" : "";
+    activeDialog === "favoriteDetail"
+      ? "max-h-[90vh] overflow-y-auto"
+      : undefined;
+
+  const isOpen = true;
 
   return (
-    <div
-      className={cn(
-        "fixed inset-0 z-50 flex items-center justify-center bg-[#5F5F62]/50 backdrop-blur-sm shadow-[inset_0px_4px_16.8px_0px_rgba(0,0,0,0.25)]"
-      )}
-      onClick={handleOverlayClick}
+    <Modal
+      isOpen={isOpen}
+      onClose={closeDialog}
+      maxWidth={maxWidth}
+      contentClassName={contentClassName || undefined}
     >
-      <div
-        className={cn(
-          "bg-white rounded-lg w-full",
-          maxWidthClasses[maxWidth],
-          contentClassName
-        )}
-        style={{
-          boxShadow: `
-            0px 16px 32px 0px rgba(29, 33, 45, 0.1),
-            0px 1px 4px 0px rgba(29, 33, 45, 0.15),
-            0px 0px 1px 0px rgba(29, 33, 45, 0.2)
-          `.trim(),
-        }}
-        onClick={handleContentClick}
-      >
-        {renderContent()}
-      </div>
-    </div>
+      {renderContent()}
+    </Modal>
   );
 }

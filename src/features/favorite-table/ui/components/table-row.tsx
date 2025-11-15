@@ -30,13 +30,13 @@ export function TableRow({
     <tr
       className={cn(
         "h-[50px] focus-within:bg-gray-50",
-        isChecked ? "bg-[#FFF4E6]" : "hover:bg-gray-50"
+        isChecked ? "bg-primary-muted" : "hover:bg-gray-50"
       )}
     >
       <td
         className={cn(
           "h-[50px] w-[60px] px-[15px]",
-          !isLast && "border-b border-[#C6C6C8]"
+          !isLast && "border-b border-gray-border"
         )}
       >
         <label className="relative inline-block cursor-pointer">
@@ -49,15 +49,15 @@ export function TableRow({
           />
           <div
             className={cn(
-              "h-5 w-5 rounded-sm border transition-colors flex items-center justify-center",
+              "flex h-5 w-5 items-center justify-center rounded-sm border transition-colors",
               isChecked
-                ? "bg-[#FF8700] border-[#FF8700]"
-                : "bg-white border-[#C6C6C8]"
+                ? "border-primary bg-primary text-primary-foreground"
+                : "border-gray-border bg-white"
             )}
           >
             {isChecked && (
               <svg
-                className="h-3 w-3 text-white"
+                className="h-3 w-3 text-current"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -76,7 +76,7 @@ export function TableRow({
       <td
         className={cn(
           "h-[50px] px-4 align-middle",
-          !isLast && "border-b border-[#C6C6C8]",
+          !isLast && "border-b border-gray-border",
           companyColumnClassName
         )}
       >
@@ -90,7 +90,7 @@ export function TableRow({
       <td
         className={cn(
           "h-[50px] px-4 align-middle",
-          !isLast && "border-b border-[#C6C6C8]",
+          !isLast && "border-b border-gray-border",
           createdColumnClassName
         )}
       >
@@ -101,12 +101,12 @@ export function TableRow({
       <td
         className={cn(
           "h-[50px] w-[74px] px-4 text-center",
-          !isLast && "border-b border-[#C6C6C8]"
+          !isLast && "border-b border-gray-border"
         )}
       >
         <button
           onClick={() => onDelete(item.id)}
-          className="text-[#C6C6C8] transition-colors hover:text-gray-600"
+          className="text-gray-border transition-colors hover:text-gray-600"
           aria-label={`${item.company_name} 삭제`}
           disabled={isDeleting}
         >
@@ -116,7 +116,7 @@ export function TableRow({
       <td
         className={cn(
           "h-[50px] w-[17px] px-2",
-          !isLast && "border-b border-[#C6C6C8]"
+          !isLast && "border-b border-gray-border"
         )}
       ></td>
     </tr>

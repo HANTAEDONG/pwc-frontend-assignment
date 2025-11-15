@@ -34,7 +34,7 @@ export function LoadingRow() {
           aria-label="데이터 로딩 중"
           className="flex flex-col items-center justify-center"
         >
-          <div className="mb-4 h-12 w-12 animate-spin rounded-full border-b-2 border-blue-600" />
+          <div className="mb-4 h-12 w-12 animate-spin rounded-full border-b-2 border-primary" />
           <p className="text-gray-600">관심 기업 목록을 불러오는 중...</p>
         </div>
       </td>
@@ -61,7 +61,7 @@ export function ErrorRow({ error, onRetry }: ErrorRowProps) {
           <p className="mb-4 text-red-600">
             {error.message || "알 수 없는 오류가 발생했습니다."}
           </p>
-          <Button onClick={onRetry} variant="fill">
+          <Button onClick={onRetry} variant="primary">
             다시 시도
           </Button>
         </div>

@@ -8,7 +8,7 @@ export function SkeletonRow({
   createdColumnClassName = "w-[25%]",
 }: SkeletonRowProps) {
   return (
-    <tr className="h-[50px] border-b border-[#C6C6C8] last:border-b-0">
+    <tr className="h-[50px] border-b border-gray-border last:border-b-0">
       <td className="w-[60px] px-[15px]">
         <div className="h-4 w-4 rounded bg-gray-200" />
       </td>

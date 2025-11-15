@@ -18,7 +18,7 @@ export function TableHeader({
       <tr className="h-[50px]">
         <th
           scope="col"
-          className="text-left align-middle h-[50px] px-[15px] border-b border-[#C6C6C8] w-[60px]"
+          className="h-[50px] w-[60px] px-[15px] text-left align-middle border-b border-gray-border"
         >
           <label className="relative inline-block cursor-pointer">
             <input
@@ -30,15 +30,15 @@ export function TableHeader({
             />
             <div
               className={cn(
-                "h-5 w-5 rounded-sm border transition-colors flex items-center justify-center",
+                "flex h-5 w-5 items-center justify-center rounded-sm border transition-colors",
                 allSelected
-                  ? "bg-[#FF8700] border-[#FF8700]"
-                  : "bg-white border-[#C6C6C8]"
+                  ? "border-primary bg-primary text-primary-foreground"
+                  : "border-gray-border bg-white"
               )}
             >
               {allSelected && (
                 <svg
-                  className="h-3 w-3 text-white"
+                  className="h-3 w-3 text-current"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -57,7 +57,7 @@ export function TableHeader({
         <th
           scope="col"
           className={cn(
-            "text-left px-4 align-middle border-b border-[#C6C6C8] h-[50px] font-sans font-semibold text-base leading-[26px] tracking-normal tabular-nums",
+            "h-[50px] border-b border-gray-border px-4 text-left font-sans text-base font-semibold leading-[26px] tracking-normal tabular-nums text-gray-900",
             companyColumnClassName
           )}
         >
@@ -66,7 +66,7 @@ export function TableHeader({
         <th
           scope="col"
           className={cn(
-            "text-left px-4 align-middle border-b border-[#C6C6C8] h-[50px] font-sans font-semibold text-base leading-[26px] tracking-normal tabular-nums",
+            "h-[50px] border-b border-gray-border px-4 text-left font-sans text-base font-semibold leading-[26px] tracking-normal tabular-nums text-gray-900",
             createdColumnClassName
           )}
         >
@@ -74,11 +74,11 @@ export function TableHeader({
         </th>
         <th
           scope="col"
-          className="text-center px-4 align-middle border-b border-[#C6C6C8] h-[50px] w-[74px]"
+          className="h-[50px] w-[74px] border-b border-gray-border px-4 text-center align-middle"
         ></th>
         <th
           scope="col"
-          className="px-2 align-middle border-b border-[#C6C6C8] h-[50px] w-[17px]"
+          className="h-[50px] w-[17px] border-b border-gray-border px-2 align-middle"
         ></th>
       </tr>
     </thead>
