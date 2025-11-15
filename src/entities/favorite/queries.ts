@@ -150,15 +150,24 @@ export function useUpdateFavoriteCompany(
         updatedFavorite.favorite_id,
         updatedFavorite.email
       );
-      const listKey = favoriteQueryKeys.list(updatedFavorite.email);
+      const listQueries =
+        queryClient.getQueriesData<PaginatedFavoriteCompanyResponse>({
+          queryKey: favoriteQueryKeys.lists(),
+        });
 
       await queryClient.cancelQueries({ queryKey: detailKey });
-      await queryClient.cancelQueries({ queryKey: listKey });
+      await queryClient.cancelQueries({ queryKey: favoriteQueryKeys.lists() });
 
       const previousFavorite =
         queryClient.getQueryData<FavoriteCompanyResponse>(detailKey);
-      const previousFavorites =
-        queryClient.getQueryData<PaginatedFavoriteCompanyResponse>(listKey);
+
+      const matchingListQuery = listQueries.find(([queryKey]) => {
+        const key = queryKey as readonly unknown[];
+        return key[1] === "list" && key[2] === updatedFavorite.email;
+      });
+      const previousFavorites = matchingListQuery?.[1] as
+        | PaginatedFavoriteCompanyResponse
+        | undefined;
 
       if (previousFavorite) {
         queryClient.setQueryData<FavoriteCompanyResponse>(detailKey, {
@@ -167,16 +176,19 @@ export function useUpdateFavoriteCompany(
         });
       }
 
-      if (previousFavorites) {
-        queryClient.setQueryData<PaginatedFavoriteCompanyResponse>(listKey, {
-          ...previousFavorites,
-          items: previousFavorites.items.map((item) =>
-            item.id === updatedFavorite.favorite_id
-              ? { ...item, memo: updatedFavorite.memo }
-              : item
-          ),
-        });
-      }
+      listQueries.forEach(([queryKey, data]) => {
+        const key = queryKey as readonly unknown[];
+        if (key[1] === "list" && key[2] === updatedFavorite.email && data) {
+          queryClient.setQueryData<PaginatedFavoriteCompanyResponse>(queryKey, {
+            ...data,
+            items: data.items.map((item) =>
+              item.id === updatedFavorite.favorite_id
+                ? { ...item, memo: updatedFavorite.memo }
+                : item
+            ),
+          });
+        }
+      });
 
       return { previousFavorite, previousFavorites };
     },
@@ -185,13 +197,21 @@ export function useUpdateFavoriteCompany(
         variables.favorite_id,
         variables.email
       );
-      const listKey = favoriteQueryKeys.list(variables.email);
+      const listQueries =
+        queryClient.getQueriesData<PaginatedFavoriteCompanyResponse>({
+          queryKey: favoriteQueryKeys.lists(),
+        });
 
       if (context?.previousFavorite) {
         queryClient.setQueryData(detailKey, context.previousFavorite);
       }
       if (context?.previousFavorites) {
-        queryClient.setQueryData(listKey, context.previousFavorites);
+        listQueries.forEach(([queryKey]) => {
+          const key = queryKey as readonly unknown[];
+          if (key[1] === "list" && key[2] === variables.email) {
+            queryClient.setQueryData(queryKey, context.previousFavorites);
+          }
+        });
       }
     },
     onSettled: (_data, _error, variables) => {
@@ -226,27 +246,47 @@ export function useDeleteFavoriteCompany(
   return useMutation({
     mutationFn: deleteFavoriteCompany,
     onMutate: async (params) => {
-      const queryKey = favoriteQueryKeys.list(params.email);
-      await queryClient.cancelQueries({ queryKey });
-      const previousFavorites =
-        queryClient.getQueryData<PaginatedFavoriteCompanyResponse>(queryKey);
-
-      if (previousFavorites) {
-        queryClient.setQueryData<PaginatedFavoriteCompanyResponse>(queryKey, {
-          ...previousFavorites,
-          items: previousFavorites.items.filter(
-            (item) => item.id !== params.favorite_id
-          ),
-          total: previousFavorites.total - 1,
+      const listQueries =
+        queryClient.getQueriesData<PaginatedFavoriteCompanyResponse>({
+          queryKey: favoriteQueryKeys.lists(),
         });
-      }
+
+      await queryClient.cancelQueries({ queryKey: favoriteQueryKeys.lists() });
+
+      const matchingListQuery = listQueries.find(([queryKey]) => {
+        const key = queryKey as readonly unknown[];
+        return key[1] === "list" && key[2] === params.email;
+      });
+      const previousFavorites = matchingListQuery?.[1] as
+        | PaginatedFavoriteCompanyResponse
+        | undefined;
+
+      listQueries.forEach(([queryKey, data]) => {
+        const key = queryKey as readonly unknown[];
+        if (key[1] === "list" && key[2] === params.email && data) {
+          queryClient.setQueryData<PaginatedFavoriteCompanyResponse>(queryKey, {
+            ...data,
+            items: data.items.filter((item) => item.id !== params.favorite_id),
+            total: data.total - 1,
+          });
+        }
+      });
 
       return { previousFavorites };
     },
     onError: (_error, variables, context) => {
       if (context?.previousFavorites) {
-        const queryKey = favoriteQueryKeys.list(variables.email);
-        queryClient.setQueryData(queryKey, context.previousFavorites);
+        const listQueries =
+          queryClient.getQueriesData<PaginatedFavoriteCompanyResponse>({
+            queryKey: favoriteQueryKeys.lists(),
+          });
+
+        listQueries.forEach(([queryKey]) => {
+          const key = queryKey as readonly unknown[];
+          if (key[1] === "list" && key[2] === variables.email) {
+            queryClient.setQueryData(queryKey, context.previousFavorites);
+          }
+        });
       }
     },
     onSettled: () => {
