@@ -8,6 +8,7 @@ export type UiDialogType =
   | "deleteFavoriteConfirm"
   | "favoriteDetail"
   | "favoriteForm"
+  | "logout"
   | "globalError";
 
 export interface UiDialogPayload {

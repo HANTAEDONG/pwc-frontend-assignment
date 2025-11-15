@@ -26,6 +26,7 @@ const maxWidthClasses = {
   lg: "max-w-lg",
   xl: "max-w-xl",
   "2xl": "max-w-2xl",
+  "640px": "max-w-[640px]",
 };
 
 function DeleteFavoriteDialogContent({ onClose }: DialogContentProps) {
@@ -295,29 +296,31 @@ function FavoriteFormDialogContent({ payload, onClose }: DialogContentProps) {
   };
 
   return (
-    <div className="p-6">
-      <div className="flex items-center justify-between mb-6">
+    <div>
+      <div className="flex items-center justify-between h-14 border-b border-gray-200 px-6 py-[5px] gap-[10px]">
         <h2 className="text-2xl font-bold text-gray-900">
           {payload?.editingId ? "관심기업 수정" : "관심기업 생성"}
         </h2>
         <button
           onClick={onClose}
-          className="text-gray-400 hover:text-gray-600 transition-colors"
+          className="text-gray-900 hover:text-gray-700 transition-colors"
           aria-label="닫기"
         >
           <X className="w-5 h-5" />
         </button>
       </div>
-      <FavoriteForm
-        email={DEFAULT_EMAIL}
-        favoriteId={payload?.editingId}
-        initialData={
-          payload?.initialCompanyName
-            ? { companyName: payload.initialCompanyName, memo: "" }
-            : undefined
-        }
-        onSuccess={handleSuccess}
-      />
+      <div className="px-6 pt-4 pb-6">
+        <FavoriteForm
+          email={DEFAULT_EMAIL}
+          favoriteId={payload?.editingId}
+          initialData={
+            payload?.initialCompanyName
+              ? { companyName: payload.initialCompanyName, memo: "" }
+              : undefined
+          }
+          onSuccess={handleSuccess}
+        />
+      </div>
     </div>
   );
 }
@@ -401,14 +404,14 @@ export function GlobalDialog() {
     e.stopPropagation();
   };
 
-  const getMaxWidth = (): "sm" | "md" | "lg" | "xl" | "2xl" => {
+  const getMaxWidth = (): keyof typeof maxWidthClasses => {
     switch (activeDialog) {
       case "deleteFavoriteConfirm":
         return "md";
       case "favoriteDetail":
         return "2xl";
       case "favoriteForm":
-        return "md";
+        return "640px";
       default:
         return "sm";
     }

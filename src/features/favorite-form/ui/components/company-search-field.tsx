@@ -24,9 +24,9 @@ export function CompanySearchField({
     <div className="mb-6">
       <label
         htmlFor="company-search"
-        className="block text-sm font-medium text-gray-700 mb-2"
+        className="block text-base font-normal text-gray-700 mb-2"
       >
-        기업 검색
+        관심기업 검색
       </label>
       <input
         type="hidden"
