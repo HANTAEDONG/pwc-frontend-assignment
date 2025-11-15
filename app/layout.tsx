@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { Providers } from "./providers";
 import { Header } from "@/features/header";
 import { Banner } from "@/widgets/banner";
+import { GlobalDialog } from "@/widgets/global-dialog";
 import { pretendardJP } from "./fonts";
 import { env } from "@/shared/config/env";
 import "./globals.css";
@@ -27,6 +28,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           <main id="main" className="flex-1 container mx-auto px-4 py-8">
             <div className="max-w-7xl mx-auto">{children}</div>
           </main>
+          <GlobalDialog />
         </Providers>
       </body>
     </html>
