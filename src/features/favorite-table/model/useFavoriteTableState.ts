@@ -84,23 +84,27 @@ export function useFavoriteTableState({
     });
   };
 
-  const handleConfirmDelete = async () => {
-    try {
-      for (const id of pendingDeleteIds) {
-        await deleteMutation.mutateAsync({
-          favorite_id: id,
-          email: "htd0913@gmail.com",
-        });
-      }
-      setSelectedIds(new Set());
-      setPendingDeleteIds([]);
-    } catch {}
-  };
-
   const handleDeleteSelected = () => {
     const selectedArray = Array.from(selectedIds);
     if (selectedArray.length > 0) {
       setPendingDeleteIds(selectedArray);
+
+      const handleConfirmDelete = async () => {
+        try {
+          for (const id of selectedArray) {
+            await deleteMutation.mutateAsync({
+              favorite_id: id,
+              email: "htd0913@gmail.com",
+            });
+          }
+          setSelectedIds(new Set());
+          setPendingDeleteIds([]);
+        } catch {
+          setSelectedIds(new Set());
+          setPendingDeleteIds([]);
+        }
+      };
+
       openDialog("deleteFavoriteConfirm", {
         count: selectedArray.length,
         onConfirm: handleConfirmDelete,
