@@ -1,6 +1,7 @@
 "use client";
 
 import { InputHTMLAttributes, forwardRef, useId } from "react";
+import { cn } from "@/shared/lib/utils";
 
 export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   label?: string;
@@ -19,7 +20,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         {label && (
           <label
             htmlFor={inputId}
-            className="block text-sm font-medium text-gray-700 mb-1"
+            className="mb-1 block text-sm font-medium text-gray-text"
           >
             {label}
           </label>
@@ -27,9 +28,11 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         <input
           ref={ref}
           id={inputId}
-          className={`block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm ${
-            error ? "border-red-300" : ""
-          } ${className}`}
+          className={cn(
+            "block w-full rounded-md border border-gray-border bg-white text-gray-text shadow-sm transition focus:border-primary focus:ring-primary focus-visible:ring-primary sm:text-sm",
+            error && "border-danger focus:border-danger focus:ring-danger",
+            className
+          )}
           aria-invalid={error ? "true" : undefined}
           aria-describedby={error ? errorMessageId : undefined}
           {...props}
@@ -38,7 +41,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           <div
             id={errorMessageId}
             role="alert"
-            className="mt-1 text-sm text-red-600"
+            className="mt-1 text-sm text-danger"
           >
             {error}
           </div>

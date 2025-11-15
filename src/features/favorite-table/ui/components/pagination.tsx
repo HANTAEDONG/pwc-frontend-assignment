@@ -73,15 +73,13 @@ export function Pagination({
   const pageNumbers = getPageNumbers();
 
   return (
-    <div className="h-[40px] flex items-center justify-center gap-1 sm:gap-2 overflow-x-auto px-2">
+    <div className="flex h-10 items-center justify-center gap-1 overflow-x-auto px-2 sm:gap-2">
       <button
         onClick={handlePrevious}
         disabled={currentPage === 1}
         className={cn(
-          "h-[40px] px-2 sm:px-4 flex items-center gap-1 text-xs sm:text-sm font-normal transition-colors shrink-0",
-          currentPage === 1
-            ? "text-[#C6C6C8] cursor-not-allowed"
-            : "text-gray-800 hover:text-gray-600 cursor-pointer"
+          "flex h-10 shrink-0 items-center gap-1 px-2 text-xs font-medium text-gray-text transition-colors disabled:cursor-not-allowed disabled:text-gray-border sm:px-4 sm:text-sm",
+          currentPage !== 1 && "cursor-pointer hover:text-gray-900"
         )}
         aria-label="이전 페이지"
       >
@@ -95,7 +93,7 @@ export function Pagination({
             return (
               <span
                 key={`ellipsis-${index}`}
-                className="text-gray-800 px-1 sm:px-2 h-[40px] flex items-center text-xs sm:text-sm"
+                className="flex h-10 items-center px-1 text-xs text-gray-500 sm:px-2 sm:text-sm"
               >
                 ...
               </span>
@@ -110,10 +108,10 @@ export function Pagination({
               key={pageNum}
               onClick={() => handlePageClick(pageNum)}
               className={cn(
-                "h-[40px] min-w-[32px] sm:min-w-[40px] px-2 sm:px-3 flex items-center justify-center text-xs sm:text-sm font-bold rounded transition-colors shrink-0",
+                "flex h-10 min-w-[32px] shrink-0 items-center justify-center rounded-md border px-2 text-xs font-semibold transition-colors sm:min-w-[40px] sm:px-3 sm:text-sm",
                 isActive
-                  ? "bg-gray-800 text-white cursor-default"
-                  : "text-gray-800 hover:text-gray-600 cursor-pointer"
+                  ? "cursor-default border-gray-600 bg-gray-600 text-white"
+                  : "cursor-pointer border-transparent text-gray-text hover:border-gray-border hover:text-gray-900"
               )}
               aria-label={`페이지 ${pageNum}`}
               aria-current={isActive ? "page" : undefined}
@@ -128,10 +126,8 @@ export function Pagination({
         onClick={handleNext}
         disabled={currentPage === totalPages}
         className={cn(
-          "h-[40px] px-2 sm:px-4 flex items-center gap-1 text-xs sm:text-sm font-normal transition-colors shrink-0",
-          currentPage === totalPages
-            ? "text-[#C6C6C8] cursor-not-allowed"
-            : "text-gray-800 hover:text-gray-600 cursor-pointer"
+          "flex h-10 shrink-0 items-center gap-1 px-2 text-xs font-medium text-gray-text transition-colors disabled:cursor-not-allowed disabled:text-gray-border sm:px-4 sm:text-sm",
+          currentPage !== totalPages && "cursor-pointer hover:text-gray-900"
         )}
         aria-label="다음 페이지"
       >

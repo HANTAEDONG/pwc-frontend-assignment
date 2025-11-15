@@ -40,16 +40,16 @@ export function SearchInput({
         aria-controls="company-search-results"
         disabled={disabled}
         className={cn(
-          "w-full h-10 px-3 pr-10 border rounded-md",
-          "focus:outline-none focus:ring-0",
+          "h-10 w-full rounded-md border px-3 pr-10 text-sm text-gray-text transition focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary",
           hasError
-            ? "border-red-500"
+            ? "border-danger focus:border-danger focus:ring-danger"
             : isOpen
-            ? "border-[#FFB27F]"
-            : "border-gray-300"
+            ? "border-primary"
+            : "border-gray-border",
+          disabled && "cursor-not-allowed bg-gray-50 text-gray-border"
         )}
       />
-      <Icon className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none text-[#5F5F62]" />
+      <Icon className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500" />
     </div>
   );
 }

@@ -114,13 +114,13 @@ export function Select({
     <div ref={containerRef} className="relative">
       <div
         className={cn(
-          "w-full h-10 px-3 pr-10 border rounded-md cursor-pointer flex items-center",
-          "focus:outline-none focus:ring-0",
+          "flex h-10 w-full cursor-pointer items-center rounded-md border bg-white px-3 pr-10 text-gray-text transition focus-within:outline-none focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-2 focus-within:ring-offset-white",
+          disabled && "cursor-not-allowed bg-gray-50 text-gray-400",
           hasError
-            ? "border-red-500"
+            ? "border-danger"
             : isOpen
-            ? "border-[#FF8700]"
-            : "border-gray-300"
+            ? "border-primary"
+            : "border-gray-border"
         )}
         onClick={() => !disabled && setIsOpen(!isOpen)}
       >
@@ -137,22 +137,22 @@ export function Select({
           placeholder={selectedOption ? undefined : placeholder}
           disabled={disabled}
           readOnly={!isOpen}
-          className="flex-1 outline-none bg-transparent"
+          className="flex-1 bg-transparent text-sm text-gray-text outline-none placeholder:text-gray-400"
           id={id}
         />
         {isOpen ? (
-          <ChevronUp className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none text-[#5F5F62]" />
+          <ChevronUp className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500" />
         ) : (
-          <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none text-[#5F5F62]" />
+          <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500" />
         )}
       </div>
       {isOpen && (
         <ul
           ref={listRef}
-          className="absolute z-10 w-full max-h-[232px] mt-2 p-3 gap-1 bg-white border border-gray-300 rounded-md overflow-y-auto flex flex-col [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] shadow-[0px_8px_16px_-2px_rgba(71,71,71,0.24)]"
+          className="absolute z-10 mt-2 flex max-h-[232px] w-full flex-col gap-1 overflow-y-auto rounded-lg border border-gray-border bg-white p-3 shadow-dialog [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         >
           {filteredOptions.length === 0 ? (
-            <li className="w-full h-10 px-3 py-4 text-sm text-gray-500 rounded-[2px]">
+            <li className="h-10 w-full rounded-xs px-3 py-4 text-sm text-gray-500">
               검색 결과가 없습니다.
             </li>
           ) : (
@@ -166,11 +166,11 @@ export function Select({
                 aria-selected={selectedIndex === index}
                 onClick={() => handleSelect(option.value)}
                 className={cn(
-                  "w-full h-10 px-3 py-4 text-sm transition-colors rounded-[2px] cursor-pointer flex items-center",
+                  "flex h-10 w-full cursor-pointer items-center rounded-xs px-3 py-4 text-sm text-gray-text transition-colors",
                   selectedIndex === index
-                    ? "bg-[#FFB27F] text-white"
+                    ? "bg-primary-light text-primary-foreground"
                     : "hover:bg-gray-50",
-                  value === option.value && "font-semibold"
+                  value === option.value && "font-semibold text-gray-900"
                 )}
               >
                 {option.label}

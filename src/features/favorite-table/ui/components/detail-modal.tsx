@@ -113,13 +113,14 @@ export function DetailModal({
       <div className="p-6">
         {/* 닫기 버튼 */}
         <div className="flex justify-end mb-4">
-          <button
+          <Button
             onClick={handleClose}
-            className="text-gray-400 hover:text-gray-600 transition-colors"
+            variant="ghost"
+            className="h-auto w-auto p-0 text-gray-400 hover:text-gray-600"
             aria-label="닫기"
           >
-            <X className="w-5 h-5" />
-          </button>
+            <X className="h-5 w-5" />
+          </Button>
         </div>
 
         {isEditMode ? (
@@ -131,7 +132,7 @@ export function DetailModal({
               <textarea
                 {...register("memo")}
                 rows={8}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md resize-none focus:outline-none focus:ring-0 focus:border-[#FF8700]"
+                className="w-full resize-none rounded-md border border-gray-border px-3 py-2 text-gray-text focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
                 placeholder="기업에 대한 메모를 입력하세요"
               />
             </div>
@@ -140,15 +141,13 @@ export function DetailModal({
                 type="button"
                 onClick={handleCancel}
                 variant="outline"
-                className="border-gray-300 text-gray-700"
                 disabled={updateMutation.isPending}
               >
                 취소하기
               </Button>
               <Button
                 type="submit"
-                variant="fill"
-                className="bg-black hover:bg-gray-800 text-white"
+                variant="primary"
                 disabled={updateMutation.isPending}
               >
                 저장하기
@@ -168,8 +167,8 @@ export function DetailModal({
                   {data?.company_name || ""}
                 </h2>
                 <div className="mb-6">
-                  <div className="border border-gray-200 rounded-lg p-4 min-h-[200px]">
-                    <p className="text-sm text-gray-700 whitespace-pre-wrap">
+                  <div className="min-h-[200px] rounded-lg border border-gray-border p-4">
+                    <p className="whitespace-pre-wrap text-sm text-gray-text">
                       {data?.memo || "메모가 없습니다."}
                     </p>
                   </div>
@@ -177,11 +176,10 @@ export function DetailModal({
                 <div className="flex justify-end">
                   <Button
                     onClick={handleEdit}
-                    variant="fill"
-                    className="bg-black hover:bg-gray-800 text-white gap-2"
+                    variant="primary"
                     leftIcon={
                       <svg
-                        className="w-4 h-4"
+                        className="h-4 w-4"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"

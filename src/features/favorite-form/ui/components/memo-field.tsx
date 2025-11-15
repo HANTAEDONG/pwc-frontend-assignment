@@ -11,7 +11,7 @@ export function MemoField({ register }: MemoFieldProps) {
       <textarea
         id="memo"
         {...register("memo")}
-        className="w-full h-[280px] px-4 py-4 border border-[#C6C6C8] rounded-md resize-none focus:outline-none focus:ring-0 focus:border-[#FF8700] text-base leading-[1.5em] text-[#3E3E3E]"
+        className="h-[280px] w-full resize-none rounded-md border border-gray-border px-4 py-4 text-base leading-relaxed text-gray-text focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
         placeholder="기업에 대한 메모를 입력하세요"
       />
     </div>

@@ -4,7 +4,7 @@ interface TableContainerProps {
 
 export function TableContainer({ children }: TableContainerProps) {
   return (
-    <div className="w-full rounded-lg overflow-hidden border border-[#C6C6C8] overflow-x-auto">
+    <div className="w-full overflow-hidden overflow-x-auto rounded-lg border border-gray-border">
       <table
         className="w-full min-w-[640px] table-fixed border-separate border-spacing-0"
         role="table"

@@ -54,17 +54,12 @@ export function useFavoriteTable({
     externalSearchQuery || searchParams?.get("search") || ""
   );
   const page = parseInt(searchParams?.get("page") || "1", 10);
-  const [isMounted, setIsMounted] = useState(false);
 
   const searchQuery = externalSearchQuery ?? internalSearchQuery;
 
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
   const { data, isLoading, error, refetch } = useFavoriteCompaniesQuery(
     { email: DEFAULT_EMAIL, page },
-    { enabled: !!DEFAULT_EMAIL && isMounted }
+    { enabled: !!DEFAULT_EMAIL }
   );
 
   const deleteMutation = useDeleteFavoriteCompany();
