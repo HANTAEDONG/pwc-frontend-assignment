@@ -1,15 +1,17 @@
 import { DropdownList } from "./dropdown-list";
 import { DropdownItem } from "./dropdown-item";
 import { LoadingState, ErrorState, EmptyState } from "./dropdown-states";
+import type { CompanyInfo } from "@/entities/company/api";
 
 interface DropdownContentProps {
   isLoading: boolean;
   error: Error | null;
-  filteredCompanies: string[];
+  filteredCompanies: string[] | CompanyInfo[];
   selectedIndex: number;
   itemRefs: React.MutableRefObject<(HTMLLIElement | null)[]>;
-  onSelect: (companyName: string) => void;
+  onSelect: (company: string | CompanyInfo) => void;
   listRef: React.RefObject<HTMLUListElement>;
+  useDartApi: boolean;
 }
 
 export function DropdownContent({
@@ -20,6 +22,7 @@ export function DropdownContent({
   itemRefs,
   onSelect,
   listRef,
+  useDartApi,
 }: DropdownContentProps) {
   if (isLoading) {
     return (
@@ -47,15 +50,20 @@ export function DropdownContent({
 
   return (
     <DropdownList ref={listRef}>
-      {filteredCompanies.map((companyName, index) => (
+      {filteredCompanies.map((company, index) => (
         <DropdownItem
-          key={`${companyName}-${index}`}
-          companyName={companyName}
+          key={
+            useDartApi
+              ? `${(company as CompanyInfo).corp_code}-${index}`
+              : `${company as string}-${index}`
+          }
+          company={company}
           isSelected={index === selectedIndex}
-          onClick={() => onSelect(companyName)}
+          onClick={() => onSelect(company)}
           onRef={(el) => {
             itemRefs.current[index] = el;
           }}
+          useDartApi={useDartApi}
         />
       ))}
     </DropdownList>
