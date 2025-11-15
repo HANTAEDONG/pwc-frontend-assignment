@@ -27,6 +27,10 @@ export interface PaginationInfo {
   hasNextPage: boolean;
 }
 
+export type UseDeleteFavoriteCompanyReturn = ReturnType<
+  typeof useDeleteFavoriteCompany
+>;
+
 export interface UseFavoriteTableReturn {
   filteredItems: FavoriteCompanyListItem[];
   isLoading: boolean;
@@ -34,7 +38,7 @@ export interface UseFavoriteTableReturn {
   data: PaginatedFavoriteCompanyResponse | undefined;
   page: number;
   searchQuery: string;
-  deleteMutation: ReturnType<typeof useDeleteFavoriteCompany>;
+  deleteMutation: UseDeleteFavoriteCompanyReturn;
   handleDelete: (id: number) => Promise<void>;
   handleRetry: () => void;
   paginationInfo: PaginationInfo | null;

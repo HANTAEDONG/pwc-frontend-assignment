@@ -1,1 +1,2 @@
-export * from './useFavoriteTable';
+export * from "./useFavoriteTable";
+export * from "./useFavoriteTableState";
