@@ -30,14 +30,16 @@ export function Header() {
       <div className="container mx-auto h-full px-4">
         <div className="flex h-full items-center justify-between">
           <div className="flex items-center gap-2">
-            <Image
-              src="/assets/pwc_logo.svg"
-              alt="PwC 로고"
-              width={106}
-              height={24}
-              priority
-              className="h-6 w-[106px]"
-            />
+            <Link href="/" aria-label="홈으로 이동">
+              <Image
+                src="/assets/pwc_logo.svg"
+                alt="PwC 로고"
+                width={106}
+                height={24}
+                priority
+                className="h-6 w-[106px]"
+              />
+            </Link>
           </div>
           <nav aria-label="주요 네비게이션" className="h-5">
             <ul className="flex h-full items-center gap-[60px]">
