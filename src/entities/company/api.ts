@@ -1,6 +1,4 @@
 import { httpClient } from "@/shared/api/http";
-import { dartHttpClient } from "@/shared/api/dart-http";
-import { env } from "@/shared/config/env";
 import { AppError } from "@/shared/api/AppError";
 
 export interface CompaniesResponse {
@@ -15,62 +13,25 @@ export async function getCompanies(): Promise<string[]> {
 export interface CompanyInfo {
   corp_code: string;
   corp_name: string;
+  stock_code?: string;
 }
 
 let cachedDartCompanies: CompanyInfo[] | null = null;
-let cacheTimestamp: number = 0;
-const CACHE_DURATION = 24 * 60 * 60 * 1000;
+
 async function fetchCompaniesFromDart(): Promise<CompanyInfo[]> {
   try {
-    const response = await dartHttpClient.get("/corpCode.xml", {
-      params: {
-        crtfc_key: env.dartApiKey,
-      },
-      responseType: "arraybuffer",
-    });
-    const arrayBuffer = response.data;
+    // public 폴더의 정적 JSON 파일 로드
+    const response = await fetch("/corp-codes.json");
 
-    const JSZip = await import("jszip");
-    const zip = await JSZip.default.loadAsync(arrayBuffer);
-
-    const xmlFile = zip.file("CORPCODE.xml");
-    if (!xmlFile) {
+    if (!response.ok) {
       throw new AppError(
-        "CORPCODE.xml 파일을 찾을 수 없습니다.",
+        "기업 코드 목록을 불러올 수 없습니다. 먼저 'pnpm generate-corp-codes'를 실행해주세요.",
         "FILE_NOT_FOUND",
-        undefined
+        response.status
       );
     }
 
-    const xmlText = await xmlFile.async("string");
-
-    const parser = new DOMParser();
-    const xmlDoc = parser.parseFromString(xmlText, "text/xml");
-
-    const parserError = xmlDoc.querySelector("parsererror");
-    if (parserError) {
-      throw new AppError(
-        "XML 파싱 중 오류가 발생했습니다.",
-        "XML_PARSE_ERROR",
-        undefined
-      );
-    }
-
-    const companies: CompanyInfo[] = [];
-    const listItems = xmlDoc.querySelectorAll("list");
-
-    listItems.forEach((item) => {
-      const corpCode = item.querySelector("corp_code")?.textContent?.trim();
-      const corpName = item.querySelector("corp_name")?.textContent?.trim();
-
-      if (corpCode && corpName) {
-        companies.push({
-          corp_code: corpCode,
-          corp_name: corpName,
-        });
-      }
-    });
-
+    const companies: CompanyInfo[] = await response.json();
     return companies;
   } catch (error) {
     if (error instanceof AppError) {
@@ -90,22 +51,20 @@ async function fetchCompaniesFromDart(): Promise<CompanyInfo[]> {
 export async function getCompaniesFromDart(
   search?: string
 ): Promise<CompanyInfo[]> {
-  const now = Date.now();
-  let companies: CompanyInfo[];
-
-  if (cachedDartCompanies && now - cacheTimestamp < CACHE_DURATION) {
-    companies = cachedDartCompanies;
-  } else {
-    companies = await fetchCompaniesFromDart();
-    cachedDartCompanies = companies;
-    cacheTimestamp = now;
+  // 캐시 확인 (한 번 로드하면 계속 사용)
+  if (!cachedDartCompanies) {
+    cachedDartCompanies = await fetchCompaniesFromDart();
   }
 
+  const companies = cachedDartCompanies;
+
+  // 검색어가 있으면 필터링
   if (search && search.trim()) {
     const searchLower = search.trim().toLowerCase();
     return companies.filter((company) =>
       company.corp_name.toLowerCase().includes(searchLower)
     );
   }
+
   return companies;
 }

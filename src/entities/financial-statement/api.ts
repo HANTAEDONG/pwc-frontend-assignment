@@ -48,9 +48,12 @@ export async function getFinancialStatement(
     accountDetail: item.account_detail,
     thstrmAmount: item.thstrm_amount,
     thstrmNm: item.thstrm_nm,
+    frmtrmAmount: item.frmtrm_amount,
+    frmtrmNm: item.frmtrm_nm,
     bfefrmtrmAmount: item.bfefrmtrm_amount,
     bfefrmtrmNm: item.bfefrmtrm_nm,
     ord: item.ord,
+    currency: item.currency,
   }));
 
   return {

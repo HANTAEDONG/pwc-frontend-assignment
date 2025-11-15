@@ -39,7 +39,10 @@ export const SJ_DIV_OPTIONS = [
 ] as const;
 
 const currentYear = new Date().getFullYear();
+const startYear = 2021;
 export const BUSINESS_YEAR_OPTIONS = Array.from(
-  { length: currentYear - 2014 },
-  (_, i) => currentYear - i
-).map((year) => ({ label: `${year}`, value: `${year}` }));
+  { length: currentYear - startYear + 1 },
+  (_, i) => startYear + i
+)
+  .reverse()
+  .map((year) => ({ label: `${year}`, value: `${year}` }));
