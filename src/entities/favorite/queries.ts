@@ -39,6 +39,7 @@ export function useFavoriteCompaniesQuery(
     queryKey: favoriteQueryKeys.list(params.email, params.page),
     queryFn: () => getFavoriteCompanies(params),
     enabled: !!params.email,
+    staleTime: 5 * 60 * 1000,
     ...options,
   });
 }
@@ -120,6 +121,7 @@ export function useCreateFavoriteCompany(
     onSettled: () => {
       queryClient.invalidateQueries({
         queryKey: favoriteQueryKeys.lists(),
+        refetchType: "active",
       });
     },
     ...options,
