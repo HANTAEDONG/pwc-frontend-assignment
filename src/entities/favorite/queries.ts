@@ -230,7 +230,10 @@ export function useUpdateFavoriteCompany(
 }
 
 type DeleteFavoriteContext = {
-  previousFavorites: PaginatedFavoriteCompanyResponse | undefined;
+  previousFavoritesMap: Map<
+    readonly unknown[],
+    PaginatedFavoriteCompanyResponse | undefined
+  >;
 };
 
 export function useDeleteFavoriteCompany(
@@ -253,38 +256,42 @@ export function useDeleteFavoriteCompany(
 
       await queryClient.cancelQueries({ queryKey: favoriteQueryKeys.lists() });
 
-      const matchingListQuery = listQueries.find(([queryKey]) => {
-        const key = queryKey as readonly unknown[];
-        return key[1] === "list" && key[2] === params.email;
-      });
-      const previousFavorites = matchingListQuery?.[1] as
-        | PaginatedFavoriteCompanyResponse
-        | undefined;
+      const previousFavoritesMap = new Map<
+        readonly unknown[],
+        PaginatedFavoriteCompanyResponse | undefined
+      >();
 
       listQueries.forEach(([queryKey, data]) => {
         const key = queryKey as readonly unknown[];
-        if (key[1] === "list" && key[2] === params.email && data) {
-          queryClient.setQueryData<PaginatedFavoriteCompanyResponse>(queryKey, {
-            ...data,
-            items: data.items.filter((item) => item.id !== params.favorite_id),
-            total: data.total - 1,
-          });
+        if (key[1] === "list" && key[2] === params.email) {
+          // 각 쿼리의 이전 데이터를 저장
+          previousFavoritesMap.set(queryKey, data);
+
+          // Optimistic update 수행
+          if (data) {
+            queryClient.setQueryData<PaginatedFavoriteCompanyResponse>(
+              queryKey,
+              {
+                ...data,
+                items: data.items.filter(
+                  (item) => item.id !== params.favorite_id
+                ),
+                total: data.total - 1,
+              }
+            );
+          }
         }
       });
 
-      return { previousFavorites };
+      return { previousFavoritesMap };
     },
     onError: (_error, variables, context) => {
-      if (context?.previousFavorites) {
-        const listQueries =
-          queryClient.getQueriesData<PaginatedFavoriteCompanyResponse>({
-            queryKey: favoriteQueryKeys.lists(),
-          });
-
-        listQueries.forEach(([queryKey]) => {
+      if (context?.previousFavoritesMap) {
+        // 각 쿼리에 대해 해당 쿼리의 이전 데이터만 복원
+        context.previousFavoritesMap.forEach((previousData, queryKey) => {
           const key = queryKey as readonly unknown[];
           if (key[1] === "list" && key[2] === variables.email) {
-            queryClient.setQueryData(queryKey, context.previousFavorites);
+            queryClient.setQueryData(queryKey, previousData);
           }
         });
       }
