@@ -92,9 +92,20 @@ export function useCompanySearchDropdown({
   }, [selectedIndex, scrollToItem]);
 
   const handleKeyDown = (e: KeyboardEvent) => {
+    if (e.key === "Enter" && selectedIndex >= 0 && filteredCompanies[selectedIndex]) {
+      e.preventDefault();
+      e.stopPropagation();
+      handleSelect(filteredCompanies[selectedIndex]);
+      return;
+    }
+
     handleKeyboardNavigation(e, {
-      onEscape: () => setIsOpen(false),
+      onEscape: () => {
+        e.preventDefault();
+        setIsOpen(false);
+      },
       onArrowDown: () => {
+        e.preventDefault();
         if (filteredCompanies.length > 0) {
           setSelectedIndex((prev) =>
             prev < filteredCompanies.length - 1 ? prev + 1 : prev
@@ -102,12 +113,8 @@ export function useCompanySearchDropdown({
         }
       },
       onArrowUp: () => {
+        e.preventDefault();
         setSelectedIndex((prev) => (prev > 0 ? prev - 1 : -1));
-      },
-      onEnter: () => {
-        if (selectedIndex >= 0 && filteredCompanies[selectedIndex]) {
-          handleSelect(filteredCompanies[selectedIndex]);
-        }
       },
     });
   };
