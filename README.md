@@ -6,24 +6,9 @@ FY26 하반기 **PwC Acceleration Center** 프론트엔드 개발자 채용 �
 
 ## **프로젝트 실행**
 
-### **1. 패키지 설치**
-
 ```bash
 pnpm install
-
-```
-
-### **2. 환경 변수 설정**
-
-루트 경로에 `.env` 파일 생성 후 필요한 값을 설정합니다.
-
-- `NEXT_PUBLIC_API_BASE_URL`
-- `NEXT_PUBLIC_SITE_URL`
-- `NEXT_PUBLIC_DART_API_KEY` (DART 기업코드 갱신 시 사용)
-
-### **3. 개발 서버 실행**
-
-```bash
+pnpm corp:generate  // 재무제표 조회 시 기업데이터 저장
 pnpm dev
 
 ```
@@ -32,31 +17,31 @@ pnpm dev
 
 ### **Core**
 
-[Next.js](https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white)
+[![Next.js](https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white)](#)
 
-[TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
+[![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](#)
 
-[React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
+[![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](#)
 
-[TanStack Query](https://img.shields.io/badge/TanStack%20Query-FF4154?style=for-the-badge&logo=reactquery&logoColor=white)
+[![TanStack Query](https://img.shields.io/badge/TanStack%20Query-FF4154?style=for-the-badge&logo=reactquery&logoColor=white)](#)
 
-[React Hook Form](https://img.shields.io/badge/React%20Hook%20Form-EC5990?style=for-the-badge&logo=reacthookform&logoColor=white)
+[![React Hook Form](https://img.shields.io/badge/React%20Hook%20Form-EC5990?style=for-the-badge&logo=reacthookform&logoColor=white)](#)
 
-[Axios](https://img.shields.io/badge/Axios-5A29E4?style=for-the-badge&logo=axios&logoColor=white)
+[![Axios](https://img.shields.io/badge/Axios-5A29E4?style=for-the-badge&logo=axios&logoColor=white)](#)
 
 ### **Testing / Mocking**
 
-[Jest](https://img.shields.io/badge/Jest-C21325?style=for-the-badge&logo=jest&logoColor=white)
+[![Jest](https://img.shields.io/badge/Jest-C21325?style=for-the-badge&logo=jest&logoColor=white)](#)
 
-[Testing Library](https://img.shields.io/badge/Testing%20Library-E33332?style=for-the-badge&logo=testinglibrary&logoColor=white)
+[![Testing Library](https://img.shields.io/badge/Testing%20Library-E33332?style=for-the-badge&logo=testinglibrary&logoColor=white)](#)
 
-[MSW](https://img.shields.io/badge/MSW-FF6A33?style=for-the-badge&logo=msw&logoColor=white)
+[![MSW](https://img.shields.io/badge/MSW-FF6A33?style=for-the-badge&logo=msw&logoColor=white)](#)
 
 ### **Style / Icons**
 
-[Tailwind CSS](https://img.shields.io/badge/Tailwind%20CSS-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind%20CSS-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)](#)
 
-[Lucide](https://img.shields.io/badge/Lucide-000000?style=for-the-badge&logo=lucide&logoColor=white)
+[![Lucide](https://img.shields.io/badge/Lucide-000000?style=for-the-badge&logo=lucide&logoColor=white)](#)
 
 - 기타: class-variance-authority, tailwind-merge
 
@@ -142,9 +127,7 @@ src/
 
 **성과**
 
-사용자는 에러 원인을 쉽게 이해하고 바로 수정할 수 있게 되었고, 오류 상황에서도 흐름이 끊기지 않는 안정적인 UX를 제공할 수 있었습니다.
-
-데이터 신선도 전략을 기능별로 최적화하면서 불필요한 요청도 줄어 성능적인 이점도 얻었습니다.
+사용자는 에러 원인을 쉽게 이해하고 바로 수정할 수 있게 되었고 오류 상황에서도 흐름이 끊기지 않는 안정적인 UX를 제공할 수 있었습니다.
 
 ## **선택 과제 수행 여부**
 

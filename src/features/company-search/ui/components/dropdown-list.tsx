@@ -17,7 +17,7 @@ export const DropdownList = forwardRef<HTMLUListElement, DropdownListProps>(
           "flex w-full flex-col gap-1 rounded-lg border border-gray-border bg-white p-3 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
           variant === "overlay"
             ? "absolute z-10 mt-2 max-h-[232px] overflow-y-auto shadow-dialog"
-            : "relative max-h-full overflow-y-auto"
+            : "relative h-[232px] overflow-y-auto"
         )}
       >
         {children}

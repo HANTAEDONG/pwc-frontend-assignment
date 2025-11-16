@@ -11,6 +11,7 @@ interface DropdownContentProps {
   onSelect: (company: string) => void;
   listRef: React.RefObject<HTMLUListElement>;
   variant?: "overlay" | "static";
+  showEmpty?: boolean;
 }
 
 export function DropdownContent({
@@ -22,6 +23,7 @@ export function DropdownContent({
   onSelect,
   listRef,
   variant = "overlay",
+  showEmpty = true,
 }: DropdownContentProps) {
   if (isLoading) {
     return (
@@ -42,7 +44,7 @@ export function DropdownContent({
   if (filteredCompanies.length === 0) {
     return (
       <DropdownList ref={listRef} variant={variant}>
-        <EmptyState />
+        {showEmpty ? <EmptyState /> : null}
       </DropdownList>
     );
   }

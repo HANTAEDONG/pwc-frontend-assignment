@@ -89,6 +89,17 @@ export function FinancialStatementFilter({
               debounceMs={250}
               hasError={!!companyNameError || !!corpCodeError}
               disabled={isBusy}
+              onClear={() => {
+                // 모달 닫힘/취소 시 폼의 회사 필드도 초기화
+                form.setValue("corpName", "", {
+                  shouldDirty: true,
+                  shouldValidate: true,
+                });
+                form.setValue("corpCode", "", {
+                  shouldDirty: true,
+                  shouldValidate: true,
+                });
+              }}
             />
             {companyNameError && (
               <p className="mt-1 text-sm text-red-500">{companyNameError}</p>
