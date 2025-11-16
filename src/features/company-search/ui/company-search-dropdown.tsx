@@ -3,16 +3,16 @@
 import { useImperativeHandle, forwardRef } from "react";
 import { useCompanySearchDropdown } from "../model";
 import type { UseCompanySearchDropdownReturn } from "../model";
-import type { CompanyInfo } from "@/entities/company/api";
 import { SearchInput } from "./components/search-input";
 import { DropdownContent } from "./components/dropdown-content";
 
 export interface CompanySearchDropdownProps {
-  onSelect: (company: string | CompanyInfo) => void;
+  onSelect: (company: string) => void;
+  useDart?: boolean;
+  debounceMs?: number;
   placeholder?: string;
   disabled?: boolean;
   hasError?: boolean;
-  useDartApi?: boolean; // DART API 사용 여부
 }
 
 export interface CompanySearchDropdownRef {
@@ -26,10 +26,11 @@ export const CompanySearchDropdown = forwardRef<
   (
     {
       onSelect,
+      useDart = false,
+      debounceMs,
       placeholder = "기업명을 검색하세요",
       disabled = false,
       hasError = false,
-      useDartApi = false,
     },
     ref
   ) => {
@@ -50,8 +51,9 @@ export const CompanySearchDropdown = forwardRef<
       close,
     }: UseCompanySearchDropdownReturn = useCompanySearchDropdown({
       onSelect,
+      useDart,
+      debounceMs,
       disabled,
-      useDartApi,
     });
 
     useImperativeHandle(ref, () => ({
@@ -82,7 +84,6 @@ export const CompanySearchDropdown = forwardRef<
             itemRefs={itemRefs}
             onSelect={handleSelect}
             listRef={listRef}
-            useDartApi={useDartApi}
           />
         )}
       </div>
