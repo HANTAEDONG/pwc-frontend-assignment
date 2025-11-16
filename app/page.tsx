@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import {
@@ -12,7 +12,7 @@ import { favoriteQueryKeys } from "@/entities/favorite/queries";
 import { getFavoriteCompanies } from "@/entities/favorite/api";
 import { DEFAULT_USER_EMAIL } from "@/shared/config/user";
 
-export default function Page() {
+function PageContent() {
   const sectionRef = useRef<FavoriteSectionRef>(null);
   const searchParams = useSearchParams();
   const queryClient = useQueryClient();
@@ -48,5 +48,13 @@ export default function Page() {
         <FavoriteSection ref={sectionRef} />
       </div>
     </div>
+  );
+}
+
+export default function Page() {
+  return (
+    <Suspense fallback={null}>
+      <PageContent />
+    </Suspense>
   );
 }
