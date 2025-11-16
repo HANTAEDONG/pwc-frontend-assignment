@@ -35,7 +35,7 @@ export async function getFinancialStatement(
   if (data.status !== "000") {
     const errorMessage =
       data.status === "013"
-        ? "조회된 데이터가 없습니다. 기업코드, 사업연도, 보고서명을 확인해주세요."
+        ? "제무제표를 조회 중 오류가 발생했습니다.\n옵션을 확인 후 다시 시도해주세요."
         : data.message || "재무제표 조회에 실패했습니다.";
     throw new AppError(errorMessage, data.status, undefined, data);
   }
