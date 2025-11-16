@@ -44,6 +44,9 @@ export function CompanySearchField({
         onSelect={handleSelect}
         disabled={disabled}
         hasError={hasError}
+        placeholder="기업명을 검색하세요"
+        useModal={false}
+        useRemoteApi
       />
     </div>
   );

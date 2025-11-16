@@ -2,7 +2,8 @@
 
 import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import type { ChangeEvent, KeyboardEvent } from "react";
-import { useCompanies } from "@/entities/company/queries";
+import { useQuery } from "@tanstack/react-query";
+import { getCompanies, getCompaniesRemote } from "@/entities/company/api";
 import { handleKeyboardNavigation } from "@/shared/lib/keyboard";
 import { debounce } from "@/shared/lib/debounce";
 
@@ -11,6 +12,7 @@ export interface UseCompanySearchDropdownOptions {
   useDart?: boolean;
   disabled?: boolean;
   debounceMs?: number;
+  useRemoteApi?: boolean;
 }
 
 export interface UseCompanySearchDropdownReturn {
@@ -29,12 +31,14 @@ export interface UseCompanySearchDropdownReturn {
   handleKeyDown: (e: KeyboardEvent) => void;
   handleFocus: () => void;
   close: () => void;
+  clear: () => void;
 }
 
 export function useCompanySearchDropdown({
   onSelect,
   disabled = false,
-  debounceMs = 300,
+  debounceMs = 250,
+  useRemoteApi = false,
 }: UseCompanySearchDropdownOptions): UseCompanySearchDropdownReturn {
   const [inputValue, setInputValue] = useState("");
   const [debouncedKeyword, setDebouncedKeyword] = useState("");
@@ -68,14 +72,25 @@ export function useCompanySearchDropdown({
     data: internalCompanies,
     isLoading,
     error,
-  } = useCompanies({
-    enabled: !!keyword && keyword.length > 0,
+  } = useQuery({
+    queryKey: ["company", "list", useRemoteApi ? "remote" : "local"],
+    enabled: !!keyword && keyword.length >= 2,
+    queryFn: () => (useRemoteApi ? getCompaniesRemote() : getCompanies()),
   });
 
   const filteredCompanies = useMemo(() => {
     const list = internalCompanies ?? [];
     const keywordLower = keyword.toLowerCase();
-    return list.filter((name) => name.toLowerCase().includes(keywordLower));
+    if (keywordLower.length < 2) return [];
+    const result: string[] = [];
+    for (let i = 0; i < list.length; i++) {
+      const name = list[i];
+      if (name.toLowerCase().includes(keywordLower)) {
+        result.push(name);
+        if (result.length >= 50) break;
+      }
+    }
+    return result;
   }, [internalCompanies, keyword]);
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -174,5 +189,9 @@ export function useCompanySearchDropdown({
     handleKeyDown,
     handleFocus,
     close,
+    clear: () => {
+      setSelectedCompany(null);
+      setInputValue("");
+    },
   };
 }

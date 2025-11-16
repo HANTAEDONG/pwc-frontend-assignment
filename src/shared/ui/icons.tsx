@@ -1,4 +1,4 @@
-import { Plus, Trash2, Trash } from "lucide-react";
+import { Plus, Trash2, Trash, Search } from "lucide-react";
 
 interface IconProps {
   className?: string;
@@ -16,4 +16,5 @@ export const ICONS = {
   plus: <Plus className="w-4 h-4" />,
   trash2: <Trash2 className="w-4 h-4" />,
   trash1: <Trash className="w-4 h-4" />,
+  search: <Search className="w-4 h-4" />,
 } as const;

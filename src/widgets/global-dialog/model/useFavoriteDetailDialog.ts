@@ -79,6 +79,7 @@ export function useFavoriteDetailDialog({
 
   const handleCancel = () => {
     closeAndReset();
+    onClose();
   };
 
   const submit = handleSubmit(async (formData: FavoriteDetailFormData) => {

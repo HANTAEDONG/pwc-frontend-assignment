@@ -46,8 +46,16 @@ export function FinancialStatementFilter({
     register,
     control,
     getValues,
+    watch,
     formState: { errors },
   } = form;
+
+  const corpCode = watch("corpCode");
+  const bsnsYear = watch("bsnsYear");
+  const reprtCode = watch("reprtCode");
+  const fsDiv = watch("fsDiv");
+  const isFormValid = !!corpCode && !!bsnsYear && !!reprtCode && !!fsDiv;
+  const isSubmitDisabled = isBusy || !isFormValid;
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
@@ -77,8 +85,8 @@ export function FinancialStatementFilter({
             <CompanySearchDropdown
               ref={dropdownRef}
               onSelect={handleCompanySelect}
-              placeholder="기업명을 입력해주세요"
-              debounceMs={0}
+              placeholder="기업을 검색해주세요 (2글자 이상 입력)"
+              debounceMs={250}
               hasError={!!companyNameError || !!corpCodeError}
               disabled={isBusy}
             />
@@ -188,11 +196,12 @@ export function FinancialStatementFilter({
       <div className="flex justify-center">
         <Button
           type="submit"
-          disabled={isBusy}
+          disabled={isSubmitDisabled}
+          aria-disabled={isSubmitDisabled}
           className={`w-[176px] h-[38px] px-4 py-2 gap-2 rounded text-base font-medium ${
-            !isBusy
+            !isSubmitDisabled
               ? "bg-black text-white hover:bg-gray-800"
-              : "bg-[#C4C4C4] text-[#3E3E3E] disabled:opacity-30 hover:bg-[#C4C4C4]"
+              : "bg-[#C4C4C4] text-[#3E3E3E] hover:bg-[#C4C4C4] cursor-not-allowed"
           }`}
           leftIcon={
             isBusy ? (
