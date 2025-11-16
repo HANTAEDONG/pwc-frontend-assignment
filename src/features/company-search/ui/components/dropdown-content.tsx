@@ -10,6 +10,7 @@ interface DropdownContentProps {
   itemRefs: React.MutableRefObject<(HTMLLIElement | null)[]>;
   onSelect: (company: string) => void;
   listRef: React.RefObject<HTMLUListElement>;
+  variant?: "overlay" | "static";
 }
 
 export function DropdownContent({
@@ -20,10 +21,11 @@ export function DropdownContent({
   itemRefs,
   onSelect,
   listRef,
+  variant = "overlay",
 }: DropdownContentProps) {
   if (isLoading) {
     return (
-      <DropdownList ref={listRef}>
+      <DropdownList ref={listRef} variant={variant}>
         <LoadingState />
       </DropdownList>
     );
@@ -31,7 +33,7 @@ export function DropdownContent({
 
   if (error) {
     return (
-      <DropdownList ref={listRef}>
+      <DropdownList ref={listRef} variant={variant}>
         <ErrorState />
       </DropdownList>
     );
@@ -39,14 +41,14 @@ export function DropdownContent({
 
   if (filteredCompanies.length === 0) {
     return (
-      <DropdownList ref={listRef}>
+      <DropdownList ref={listRef} variant={variant}>
         <EmptyState />
       </DropdownList>
     );
   }
 
   return (
-    <DropdownList ref={listRef}>
+    <DropdownList ref={listRef} variant={variant}>
       {filteredCompanies.map((company, index) => (
         <DropdownItem
           key={`${company}-${index}`}
