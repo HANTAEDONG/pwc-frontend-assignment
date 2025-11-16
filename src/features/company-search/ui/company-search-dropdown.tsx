@@ -146,13 +146,13 @@ export const CompanySearchDropdown = forwardRef<
                     htmlFor="company-search-modal"
                     className="mb-2 block text-sm font-medium text-gray-700"
                   >
-                    기업을 검색해주세요
+                    기업을 검색해주세요 (2글자 이상 입력)
                   </label>
                   <input
                     id="company-search-modal"
                     type="text"
                     value={displayValue}
-                    placeholder="기업을 검색해주세요"
+                    placeholder="기업을 검색해주세요 (2글자 이상 입력)"
                     onChange={handleInputChange}
                     onKeyDown={handleKeyDown}
                     onFocus={handleFocus}
