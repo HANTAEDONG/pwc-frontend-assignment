@@ -1,15 +1,20 @@
 "use client";
 
-import { useState } from "react";
+import { useState, lazy, Suspense } from "react";
 import { FinancialStatementFilter } from "@/features/financial-statement-filter";
 import type { FinancialStatementFilterParams } from "@/features/financial-statement-filter";
 import { useFinancialStatementQuery } from "@/entities/financial-statement";
-import { FinancialStatementTable } from "./components/financial-statement-table";
 import {
   LoadingState,
   ErrorState,
   EmptyState,
 } from "./components/result-states";
+
+const FinancialStatementTable = lazy(() =>
+  import("./components/financial-statement-table").then((mod) => ({
+    default: mod.FinancialStatementTable,
+  }))
+);
 
 export function FinancialStatementViewer() {
   const [searchParams, setSearchParams] =
@@ -58,11 +63,19 @@ export function FinancialStatementViewer() {
           />
         )}
         {searchParams && data && !isLoading && !error && (
-          <FinancialStatementTable
-            rows={data.rows}
-            reprtCode={searchParams.reprtCode}
-            bsnsYear={searchParams.bsnsYear}
-          />
+          <Suspense
+            fallback={
+              <div className="flex items-center justify-center min-h-[400px]">
+                <div className="text-gray-500">테이블 로딩 중...</div>
+              </div>
+            }
+          >
+            <FinancialStatementTable
+              rows={data.rows}
+              reprtCode={searchParams.reprtCode}
+              bsnsYear={searchParams.bsnsYear}
+            />
+          </Suspense>
         )}
       </section>
     </div>
