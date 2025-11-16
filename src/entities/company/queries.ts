@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { getCompanies } from "./api";
+import { getCompanies, getCompaniesRemote } from "./api";
 import type { QueryOptions, QueryKeyFactory } from "@/shared/lib/react-query";
 
 export const companyQueryKeys: QueryKeyFactory<["company"]> = {
@@ -14,6 +14,14 @@ export function useCompanies(options?: QueryOptions<string[]>) {
   return useQuery({
     queryKey: companyQueryKeys.lists(),
     queryFn: getCompanies,
+    ...options,
+  });
+}
+
+export function useCompaniesRemote(options?: QueryOptions<string[]>) {
+  return useQuery({
+    queryKey: [...companyQueryKeys.lists(), "remote"],
+    queryFn: getCompaniesRemote,
     ...options,
   });
 }
