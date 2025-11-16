@@ -17,6 +17,7 @@ export interface CompanySearchDropdownProps {
   hasError?: boolean;
   useModal?: boolean;
   useRemoteApi?: boolean;
+  onClear?: () => void;
 }
 
 export interface CompanySearchDropdownRef {
@@ -37,6 +38,7 @@ export const CompanySearchDropdown = forwardRef<
       hasError = false,
       useModal = true,
       useRemoteApi = false,
+      onClear,
     },
     ref
   ) => {
@@ -81,6 +83,7 @@ export const CompanySearchDropdown = forwardRef<
     const handleModalClose = () => {
       if (useModal) {
         clear();
+        onClear?.();
       }
       setIsModalOpen(false);
       setPendingCompany(null);

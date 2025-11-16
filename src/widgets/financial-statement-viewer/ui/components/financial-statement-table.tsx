@@ -598,7 +598,7 @@ export const FinancialStatementTable = memo(function FinancialStatementTable({
     reprtCode === REPORT_CODE_MAP["3분기보고서"];
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 max-h-[600px] overflow-y-auto pr-2">
       {rows.length === 0 && (
         <div className="text-center py-8 text-gray-500">
           조회된 재무제표 데이터가 없습니다.
