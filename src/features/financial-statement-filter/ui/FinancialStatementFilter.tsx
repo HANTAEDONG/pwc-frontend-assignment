@@ -1,25 +1,18 @@
 "use client";
 
-import { useState, useRef } from "react";
-import { useForm, Controller } from "react-hook-form";
+import { Controller } from "react-hook-form";
 import { Button, Select } from "@/shared/ui";
 import { FileScan, Loader2 } from "lucide-react";
 import { CompanySearchDropdown } from "@/features/company-search";
-import type { CompanySearchDropdownRef } from "@/features/company-search";
 import {
   BUSINESS_YEAR_OPTIONS,
   REPORT_NAME_OPTIONS,
   FS_DIV_OPTIONS,
 } from "@/entities/financial-statement";
-import type { CompanyInfo } from "@/entities/company";
-
-export interface FinancialStatementFilterParams {
-  corpCode: string;
-  corpName: string;
-  bsnsYear: string;
-  reprtCode: string;
-  fsDiv: string;
-}
+import {
+  useFinancialStatementFilter,
+  type FinancialStatementFilterParams,
+} from "../model/useFinancialStatementFilter";
 
 interface FinancialStatementFilterProps {
   onSubmit: (params: FinancialStatementFilterParams) => void;
@@ -34,70 +27,30 @@ export function FinancialStatementFilter({
   initialCorpName = "",
   disabled = false,
 }: FinancialStatementFilterProps) {
-  const dropdownRef = useRef<CompanySearchDropdownRef>(null);
+  const {
+    form,
+    dropdownRef,
+    isBusy,
+    companyNameError,
+    corpCodeError,
+    handleCompanySelect,
+    handleSubmit,
+  } = useFinancialStatementFilter({
+    onSubmit,
+    initialCorpCode,
+    initialCorpName,
+    disabled,
+  });
+
   const {
     register,
-    handleSubmit,
-    setValue,
     control,
-    clearErrors,
     getValues,
-    formState: { errors, isSubmitting },
-  } = useForm<FinancialStatementFilterParams>({
-    defaultValues: {
-      corpCode: initialCorpCode,
-      corpName: initialCorpName,
-      bsnsYear: "",
-      reprtCode: "",
-      fsDiv: "",
-    },
-  });
-  const isBusy = disabled || isSubmitting;
-
-  const [corpCodeCache, setCorpCodeCache] = useState<CompanyInfo[] | null>(
-    null
-  );
-
-  const loadCorpCodes = async (): Promise<CompanyInfo[]> => {
-    if (corpCodeCache) return corpCodeCache;
-    try {
-      const res = await fetch("/corp-codes.json");
-      if (!res.ok) throw new Error("Failed to load corp-codes.json");
-      const data = (await res.json()) as CompanyInfo[];
-      setCorpCodeCache(data);
-      return data;
-    } catch {
-      setCorpCodeCache([]);
-      return [];
-    }
-  };
-
-  const handleCompanySelect = async (companyName: string) => {
-    setValue("corpName", companyName, {
-      shouldValidate: true,
-      shouldDirty: true,
-    });
-    dropdownRef.current?.close();
-    // 하드코딩된 corp-codes.json에서 corp_code 매핑
-    const codes = await loadCorpCodes();
-    const matched =
-      codes.find((c) => c.corp_name === companyName) ||
-      codes.find((c) => c.corp_name.includes(companyName));
-    setValue("corpCode", matched?.corp_code ?? "", {
-      shouldValidate: true,
-      shouldDirty: true,
-    });
-    if (companyName) {
-      clearErrors("corpName");
-    }
-  };
-
-  const onValidSubmit = (values: FinancialStatementFilterParams) => {
-    onSubmit(values);
-  };
+    formState: { errors },
+  } = form;
 
   return (
-    <form onSubmit={handleSubmit(onValidSubmit)} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-4">
       <div className="flex flex-col gap-4">
         <div className="flex items-center gap-4">
           <label
@@ -126,18 +79,14 @@ export function FinancialStatementFilter({
               onSelect={handleCompanySelect}
               placeholder="기업명을 입력해주세요"
               debounceMs={0}
-              hasError={false}
+              hasError={!!companyNameError || !!corpCodeError}
               disabled={isBusy}
             />
-            {errors.corpName && (
-              <p className="mt-1 text-sm text-red-500">
-                {errors.corpName.message}
-              </p>
+            {companyNameError && (
+              <p className="mt-1 text-sm text-red-500">{companyNameError}</p>
             )}
-            {errors.corpCode && (
-              <p className="mt-1 text-sm text-red-500">
-                {errors.corpCode.message}
-              </p>
+            {corpCodeError && (
+              <p className="mt-1 text-sm text-red-500">{corpCodeError}</p>
             )}
           </div>
         </div>
