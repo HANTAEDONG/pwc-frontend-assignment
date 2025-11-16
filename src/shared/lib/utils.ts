@@ -6,14 +6,13 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function formatDate(dateString: string): string {
-  // 백엔드가 UTC 또는 타임존 미포함 문자열을 줄 수 있으므로,
-  // 항상 KST(Asia/Seoul) 기준으로 표기한다.
-  // ISO 미포함 공백 포맷("YYYY-MM-DD HH:mm:ss")인 경우를 보완하여 파싱.
-  const normalized =
-    dateString.includes("T") || /[zZ]|[+-]\d{2}:\d{2}$/.test(dateString)
-      ? dateString
-      : dateString.replace(" ", "T") + "Z";
-  const date = new Date(normalized);
+  const hasTz = /[zZ]|[+-]\d{2}:\d{2}$/.test(dateString);
+
+  const normalized = dateString.includes("T")
+    ? dateString
+    : dateString.replace(" ", "T");
+  const base = new Date(normalized);
+  const date = hasTz ? base : new Date(base.getTime() + 9 * 60 * 60 * 1000);
 
   const parts = new Intl.DateTimeFormat("ko-KR", {
     timeZone: "Asia/Seoul",
