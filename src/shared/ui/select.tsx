@@ -137,6 +137,7 @@ export function Select({
           placeholder={selectedOption ? undefined : placeholder}
           disabled={disabled}
           readOnly={!isOpen}
+          autoComplete="off"
           className="flex-1 bg-transparent text-sm text-gray-text outline-none placeholder:text-gray-400"
           id={id}
         />
