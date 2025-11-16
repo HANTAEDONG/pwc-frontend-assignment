@@ -1,6 +1,22 @@
 "use client";
 
-import { FinancialStatementViewer } from "@/widgets/financial-statement-viewer";
+import dynamic from "next/dynamic";
+import { Suspense } from "react";
+
+const FinancialStatementViewer = dynamic(
+  () =>
+    import("@/widgets/financial-statement-viewer").then(
+      (mod) => mod.FinancialStatementViewer
+    ),
+  {
+    loading: () => (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-gray-500">로딩 중...</div>
+      </div>
+    ),
+    ssr: false,
+  }
+);
 
 export default function SpecializedPage() {
   return (
@@ -14,7 +30,15 @@ export default function SpecializedPage() {
             기업명과 보고서 옵션을 선택하여 재무제표를 조회해보세요.
           </p>
         </div>
-        <FinancialStatementViewer />
+        <Suspense
+          fallback={
+            <div className="flex items-center justify-center min-h-[400px]">
+              <div className="text-gray-500">로딩 중...</div>
+            </div>
+          }
+        >
+          <FinancialStatementViewer />
+        </Suspense>
       </div>
     </main>
   );
