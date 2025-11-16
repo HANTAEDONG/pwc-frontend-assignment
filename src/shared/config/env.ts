@@ -1,13 +1,17 @@
 const DEFAULT_API_BASE_URL =
-  "https://dev-assignment-env.eba-vpitzthp.ap-northeast-2.elasticbeanstalk.com";
+  "http://dev-assignment-env.eba-vpitzthp.ap-northeast-2.elasticbeanstalk.com";
 const DEFAULT_SITE_URL = "http://localhost:3000";
 
-export const env = {
-  apiBaseUrl: process.env.NEXT_PUBLIC_API_BASE_URL ?? DEFAULT_API_BASE_URL,
-  siteUrl: process.env.NEXT_PUBLIC_SITE_URL ?? DEFAULT_SITE_URL,
-  dartApiKey: process.env.NEXT_PUBLIC_DART_API_KEY ?? "",
-} as const;
+export type EnvConfig = {
+  apiBaseUrl: string;
+  siteUrl: string;
+  dartApiKey: string;
+};
 
-export type EnvConfig = typeof env;
+export const env: EnvConfig = {
+  apiBaseUrl: DEFAULT_API_BASE_URL,
+  siteUrl: DEFAULT_SITE_URL,
+  dartApiKey: "",
+};
 
 export { DEFAULT_API_BASE_URL, DEFAULT_SITE_URL };
