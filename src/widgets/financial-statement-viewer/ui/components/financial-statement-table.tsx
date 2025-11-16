@@ -281,7 +281,6 @@ function QuarterlyTableRenderer({
   sjNm,
   rows,
   periods,
-  getAmountForPeriod,
   bsnsYear,
   reprtCode,
 }: {
@@ -289,32 +288,43 @@ function QuarterlyTableRenderer({
   sjNm: string;
   rows: FinancialStatementRow[];
   periods: string[];
-  getAmountForPeriod: (row: FinancialStatementRow, period: string) => string;
   bsnsYear?: string;
   reprtCode?: string;
 }) {
   const unitLabel = "백만원";
 
-  // 기간을 그룹화 (예: "제 57 기 1분기" -> ["3개월", "누적"])
-  // 실제 데이터 구조에 맞게 조정 필요
-  const periodGroups: Array<{ main: string; sub: string[] }> = [];
+  // periods를 그룹화: 분기 보고서인 경우 각 기간에 대해 [3개월, 누적] 2개 서브 컬럼 생성
+  const periodGroups: Array<{ main: string; sub: Array<"3개월" | "누적"> }> =
+    periods.map((p) =>
+      p.includes("분기")
+        ? { main: p, sub: ["3개월", "누적"] }
+        : { main: p, sub: ["3개월", "누적"] } // 손익/포괄손익은 분기/반기에 상관없이 3개월/누적 구조를 유지
+    );
 
-  // periods를 분석하여 그룹화
-  // 예: ["제 57 기 1분기", "제 56 기 1분기"] -> 각각 3개월/누적로 분리
-  periods.forEach((period) => {
-    // 기간명에서 분기 정보 추출
-    if (period.includes("분기")) {
-      periodGroups.push({
-        main: period,
-        sub: ["3개월", "누적"],
-      });
-    } else {
-      periodGroups.push({
-        main: period,
-        sub: [period],
-      });
+  function getQuarterlyAmounts(
+    row: FinancialStatementRow,
+    mainPeriod: string
+  ): { threeMonth: string; cumulative: string } {
+    if (row.thstrmNm === mainPeriod) {
+      return {
+        threeMonth: row.thstrmAmount,
+        cumulative: row.thstrmAddAmount ?? row.thstrmAmount,
+      };
     }
-  });
+    if (row.frmtrmNm === mainPeriod) {
+      return {
+        threeMonth: row.frmtrmAmount,
+        cumulative: row.frmtrmAddAmount ?? row.frmtrmAmount,
+      };
+    }
+    if (row.bfefrmtrmNm === mainPeriod) {
+      return {
+        threeMonth: row.bfefrmtrmAmount,
+        cumulative: row.bfefrmtrmAddAmount ?? row.bfefrmtrmAmount,
+      };
+    }
+    return { threeMonth: "-", cumulative: "-" };
+  }
 
   return (
     <div className="overflow-x-auto">
@@ -376,22 +386,30 @@ function QuarterlyTableRenderer({
                   {row.accountNm}
                   {row.accountDetail ? ` (${row.accountDetail})` : ""}
                 </td>
-                {periodGroups.map((group) =>
-                  group.sub.map((sub) => {
-                    // 실제 데이터 매핑 로직 필요
-                    // 현재는 간단히 period로 매핑
-                    const amount = getAmountForPeriod(row, group.main);
-                    return (
+                {periodGroups.map((group) => {
+                  const { threeMonth, cumulative } = getQuarterlyAmounts(
+                    row,
+                    group.main
+                  );
+                  return (
+                    <>
                       <td
-                        key={`${group.main}-${sub}`}
+                        key={`${group.main}-3개월`}
                         className="text-right border border-gray-500"
                         style={tdStyle}
                       >
-                        {formatAmount(amount)}
+                        {formatAmount(threeMonth)}
                       </td>
-                    );
-                  })
-                )}
+                      <td
+                        key={`${group.main}-누적`}
+                        className="text-right border border-gray-500"
+                        style={tdStyle}
+                      >
+                        {formatAmount(cumulative)}
+                      </td>
+                    </>
+                  );
+                })}
               </tr>
             );
           })}
@@ -641,7 +659,6 @@ export const FinancialStatementTable = memo(function FinancialStatementTable({
                 sjNm={sjNm}
                 rows={sortedRows}
                 periods={periodsOrdered}
-                getAmountForPeriod={getAmountForPeriod}
                 bsnsYear={bsnsYear}
                 reprtCode={reprtCode}
               />
