@@ -10,8 +10,7 @@ import {
 import { FavoriteActions } from "@/widgets/favorite-section";
 import { favoriteQueryKeys } from "@/entities/favorite/queries";
 import { getFavoriteCompanies } from "@/entities/favorite/api";
-
-const DEFAULT_EMAIL = "htd0913@gmail.com";
+import { DEFAULT_USER_EMAIL } from "@/shared/config/user";
 
 export default function Page() {
   const sectionRef = useRef<FavoriteSectionRef>(null);
@@ -22,8 +21,9 @@ export default function Page() {
     const page = parseInt(searchParams?.get("page") || "1", 10);
     const prefetchData = async () => {
       await queryClient.prefetchQuery({
-        queryKey: favoriteQueryKeys.list(DEFAULT_EMAIL, page),
-        queryFn: () => getFavoriteCompanies({ email: DEFAULT_EMAIL, page }),
+        queryKey: favoriteQueryKeys.list(DEFAULT_USER_EMAIL, page),
+        queryFn: () =>
+          getFavoriteCompanies({ email: DEFAULT_USER_EMAIL, page }),
         staleTime: 5 * 60 * 1000,
       });
     };
