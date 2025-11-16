@@ -20,6 +20,7 @@ import type {
   MutationOptions,
   QueryKeyFactory,
 } from "@/shared/lib/react-query";
+import { DEFAULT_USER_EMAIL } from "@/shared/config/user";
 
 export const favoriteQueryKeys = {
   all: ["favorite"] as const,
@@ -305,20 +306,18 @@ export function useDeleteFavoriteCompany(
   });
 }
 
-const DEFAULT_EMAIL = "htd0913@gmail.com";
-
 export function useFavorite(
   id: string,
   options?: QueryOptions<FavoriteCompanyResponse>
 ) {
   const favoriteId = parseInt(id, 10);
   return useFavoriteCompanyDetailQuery(
-    { favorite_id: favoriteId, email: DEFAULT_EMAIL },
+    { favorite_id: favoriteId, email: DEFAULT_USER_EMAIL },
     { enabled: !!id && !isNaN(favoriteId), ...options }
   );
 }
 
-export function useFavorites(email: string = DEFAULT_EMAIL) {
+export function useFavorites(email: string = DEFAULT_USER_EMAIL) {
   const { data, isLoading, error } = useFavoriteCompaniesQuery(
     { email },
     { enabled: !!email }
@@ -334,7 +333,7 @@ export function useFavorites(email: string = DEFAULT_EMAIL) {
   };
 }
 
-export function useDeleteFavorite(email: string = DEFAULT_EMAIL) {
+export function useDeleteFavorite(email: string = DEFAULT_USER_EMAIL) {
   const mutation = useDeleteFavoriteCompany();
 
   return {
