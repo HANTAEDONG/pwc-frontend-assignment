@@ -1,37 +1,31 @@
 "use client";
 
-import {
-  useState,
-  useDeferredValue,
-  useRef,
-  useEffect,
-  useCallback,
-  useMemo,
-} from "react";
+import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import type { ChangeEvent, KeyboardEvent } from "react";
-import { useCompanies, useDartCompanies } from "@/entities/company/queries";
-import type { CompanyInfo } from "@/entities/company/api";
+import { useCompanies } from "@/entities/company/queries";
 import { handleKeyboardNavigation } from "@/shared/lib/keyboard";
+import { debounce } from "@/shared/lib/debounce";
 
 export interface UseCompanySearchDropdownOptions {
-  onSelect: (company: string | CompanyInfo) => void;
+  onSelect: (company: string) => void;
+  useDart?: boolean;
   disabled?: boolean;
-  useDartApi?: boolean;
+  debounceMs?: number;
 }
 
 export interface UseCompanySearchDropdownReturn {
   inputValue: string;
   isOpen: boolean;
   selectedIndex: number;
-  selectedCompany: string | CompanyInfo | null;
-  filteredCompanies: string[] | CompanyInfo[];
+  selectedCompany: string | null;
+  filteredCompanies: string[];
   isLoading: boolean;
   error: Error | null;
   displayValue: string;
   listRef: React.RefObject<HTMLUListElement>;
   itemRefs: React.MutableRefObject<(HTMLLIElement | null)[]>;
   handleInputChange: (e: ChangeEvent<HTMLInputElement>) => void;
-  handleSelect: (company: string | CompanyInfo) => void;
+  handleSelect: (company: string) => void;
   handleKeyDown: (e: KeyboardEvent) => void;
   handleFocus: () => void;
   close: () => void;
@@ -40,54 +34,49 @@ export interface UseCompanySearchDropdownReturn {
 export function useCompanySearchDropdown({
   onSelect,
   disabled = false,
-  useDartApi = false,
+  debounceMs = 300,
 }: UseCompanySearchDropdownOptions): UseCompanySearchDropdownReturn {
   const [inputValue, setInputValue] = useState("");
+  const [debouncedKeyword, setDebouncedKeyword] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(-1);
-  const [selectedCompany, setSelectedCompany] = useState<
-    string | CompanyInfo | null
-  >(null);
-  const deferredKeyword = useDeferredValue(inputValue);
+  const [selectedCompany, setSelectedCompany] = useState<string | null>(null);
   const listRef = useRef<HTMLUListElement>(null);
   const itemRefs = useRef<(HTMLLIElement | null)[]>([]);
 
-  const keyword = deferredKeyword.trim();
+  const debouncedSetKeyword = useMemo(() => {
+    if (debounceMs && debounceMs > 0) {
+      return debounce((keyword: string) => {
+        setDebouncedKeyword(keyword);
+      }, debounceMs);
+    }
+    return null;
+  }, [debounceMs]);
 
-  // 백엔드 API 사용 (관심 기업 관리용)
+  useEffect(() => {
+    const next = inputValue.trim();
+    if (debouncedSetKeyword) {
+      debouncedSetKeyword(next);
+    } else {
+      setDebouncedKeyword(next);
+    }
+  }, [inputValue, debouncedSetKeyword]);
+
+  const keyword = debouncedKeyword;
+
   const {
-    data: backendCompanies,
-    isLoading: isLoadingBackend,
-    error: errorBackend,
+    data: internalCompanies,
+    isLoading,
+    error,
   } = useCompanies({
-    enabled: !useDartApi && !!keyword && keyword.length > 0,
+    enabled: !!keyword && keyword.length > 0,
   });
-
-  // DART API 사용 (재무제표 조회용)
-  const {
-    data: dartCompanies,
-    isLoading: isLoadingDart,
-    error: errorDart,
-  } = useDartCompanies(keyword || undefined, {
-    enabled: useDartApi && !!keyword && keyword.length > 0,
-  });
-
-  const companies = useDartApi ? dartCompanies : backendCompanies;
-  const isLoading = useDartApi ? isLoadingDart : isLoadingBackend;
-  const error = useDartApi ? errorDart : errorBackend;
 
   const filteredCompanies = useMemo(() => {
-    if (!companies) return [];
-    if (useDartApi) {
-      return companies as CompanyInfo[];
-    } else {
-      const companyNames = companies as string[];
-      const keywordLower = keyword.toLowerCase();
-      return companyNames.filter((name) =>
-        name.toLowerCase().includes(keywordLower)
-      );
-    }
-  }, [companies, keyword, useDartApi]);
+    const list = internalCompanies ?? [];
+    const keywordLower = keyword.toLowerCase();
+    return list.filter((name) => name.toLowerCase().includes(keywordLower));
+  }, [internalCompanies, keyword]);
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (disabled) return;
@@ -98,7 +87,7 @@ export function useCompanySearchDropdown({
     setSelectedCompany(null);
   };
 
-  const handleSelect = (company: string | CompanyInfo) => {
+  const handleSelect = (company: string) => {
     onSelect(company);
     setSelectedCompany(company);
     setIsOpen(false);
@@ -167,12 +156,7 @@ export function useCompanySearchDropdown({
     setIsOpen(false);
   }, []);
 
-  const displayValue =
-    inputValue ||
-    (useDartApi
-      ? (selectedCompany as CompanyInfo)?.corp_name
-      : (selectedCompany as string)) ||
-    "";
+  const displayValue = inputValue || selectedCompany || "";
 
   return {
     inputValue,

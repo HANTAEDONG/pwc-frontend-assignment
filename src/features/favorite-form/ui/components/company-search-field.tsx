@@ -2,7 +2,6 @@ import type { UseFormRegister } from "react-hook-form";
 import { CompanySearchDropdown } from "@/features/company-search";
 import type { CompanySearchDropdownRef } from "@/features/company-search";
 import type { FavoriteFormData } from "../../model";
-import type { CompanyInfo } from "@/entities/company/api";
 
 interface CompanySearchFieldProps {
   dropdownRef: React.RefObject<CompanySearchDropdownRef>;
@@ -21,12 +20,8 @@ export function CompanySearchField({
   register,
   isEditMode,
 }: CompanySearchFieldProps) {
-  const handleSelect = (company: string | CompanyInfo) => {
-    if (typeof company === "string") {
-      onSelect(company);
-      return;
-    }
-    onSelect(company.corp_name);
+  const handleSelect = (companyName: string) => {
+    onSelect(companyName);
   };
 
   return (

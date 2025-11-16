@@ -1,13 +1,11 @@
 "use client";
 
-import { Suspense, useRef, forwardRef, useImperativeHandle } from "react";
+import { useRef, forwardRef, useImperativeHandle } from "react";
 
 import {
   FavoriteTable,
   type FavoriteTableRef,
 } from "@/features/favorite-table";
-
-import { FavoriteTableSkeleton } from "./favorite-table-skeleton";
 
 export interface FavoriteSectionRef {
   getTableRef: () => FavoriteTableRef | null;
@@ -28,9 +26,7 @@ export const FavoriteSection = forwardRef<
 
   return (
     <section className="w-full">
-      <Suspense fallback={<FavoriteTableSkeleton />}>
-        <FavoriteTable ref={tableRef} />
-      </Suspense>
+      <FavoriteTable ref={tableRef} />
     </section>
   );
 });

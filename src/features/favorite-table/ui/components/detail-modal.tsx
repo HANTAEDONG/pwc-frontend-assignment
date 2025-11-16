@@ -8,6 +8,7 @@ import {
   useFavoriteCompanyDetailQuery,
   useUpdateFavoriteCompany,
 } from "@/entities/favorite/queries";
+import { DEFAULT_USER_EMAIL } from "@/shared/config/user";
 
 interface DetailModalProps {
   isOpen: boolean;
@@ -32,7 +33,7 @@ export function DetailModal({
   const { data, isLoading } = useFavoriteCompanyDetailQuery(
     {
       favorite_id: favoriteId!,
-      email: "htd0913@gmail.com",
+      email: DEFAULT_USER_EMAIL,
     },
     {
       enabled: isOpen && !!favoriteId,
@@ -82,7 +83,7 @@ export function DetailModal({
     try {
       await updateMutation.mutateAsync({
         favorite_id: favoriteId!,
-        email: "htd0913@gmail.com",
+        email: DEFAULT_USER_EMAIL,
         memo: formData.memo?.trim() || null,
       });
       setIsEditMode(false);

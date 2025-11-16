@@ -36,6 +36,7 @@ export function SearchInput({
         onChange={onChange}
         onKeyDown={onKeyDown}
         onFocus={onFocus}
+        autoComplete="off"
         aria-autocomplete="list"
         aria-controls="company-search-results"
         disabled={disabled}

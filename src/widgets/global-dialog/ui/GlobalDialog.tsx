@@ -1,23 +1,17 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { X, XCircle, Pencil } from "lucide-react";
-import { useForm } from "react-hook-form";
+import { X, XCircle } from "lucide-react";
 import { useUiDialog } from "@/entities/ui";
 import type { UiDialogPayload } from "@/entities/ui";
 import { Button, Modal } from "@/shared/ui";
 import { FavoriteForm } from "@/features/favorite-form/ui/favorite-form";
-import {
-  useFavoriteCompanyDetailQuery,
-  useUpdateFavoriteCompany,
-} from "@/entities/favorite/queries";
+import { DEFAULT_USER_EMAIL } from "@/shared/config/user";
+import { FavoriteDetailDialogContent } from "./components/favorite-detail-dialog-content";
 
 interface DialogContentProps {
   payload: UiDialogPayload | null;
   onClose: () => void;
 }
-
-const DEFAULT_EMAIL = "htd0913@gmail.com";
 
 type DialogMaxWidth = "sm" | "md" | "lg" | "xl" | "2xl" | "1000px";
 
@@ -89,150 +83,6 @@ function DeleteFavoriteConfirmDialogContent({
   );
 }
 
-interface EditFormData {
-  memo: string;
-}
-
-function FavoriteDetailDialogContent({ payload, onClose }: DialogContentProps) {
-  const [isEditMode, setIsEditMode] = useState(false);
-  const updateMutation = useUpdateFavoriteCompany();
-
-  const favoriteId = payload?.favoriteId;
-  const { data, isLoading } = useFavoriteCompanyDetailQuery(
-    {
-      favorite_id: favoriteId ?? 0,
-      email: DEFAULT_EMAIL,
-    },
-    {
-      enabled: !!favoriteId,
-    }
-  );
-
-  const { handleSubmit, register, reset } = useForm<EditFormData>({
-    defaultValues: {
-      memo: data?.memo || "",
-    },
-  });
-
-  useEffect(() => {
-    if (data) {
-      reset({
-        memo: data.memo || "",
-      });
-    }
-  }, [data, reset]);
-
-  useEffect(() => {
-    if (!payload?.favoriteId) {
-      setIsEditMode(false);
-      if (data) {
-        reset({
-          memo: data.memo || "",
-        });
-      }
-    }
-  }, [payload?.favoriteId, data, reset]);
-
-  const handleEdit = () => {
-    setIsEditMode(true);
-  };
-
-  const handleCancel = () => {
-    setIsEditMode(false);
-    if (data) {
-      reset({
-        memo: data.memo || "",
-      });
-    }
-  };
-
-  const onSubmit = async (formData: EditFormData) => {
-    if (!favoriteId) return;
-    try {
-      await updateMutation.mutateAsync({
-        favorite_id: favoriteId,
-        email: DEFAULT_EMAIL,
-        memo: formData.memo?.trim() || null,
-      });
-      setIsEditMode(false);
-      payload?.onSuccess?.();
-      onClose();
-    } catch {}
-  };
-
-  if (!payload?.favoriteId) return null;
-
-  return (
-    <div>
-      <div className="flex items-center justify-center gap-2.5 border-b border-gray-border px-5 py-2">
-        <h2 className="text-2xl font-bold text-gray-900 leading-[1.4166666666666667em] whitespace-nowrap flex-shrink-0">
-          {data?.company_name || ""}
-        </h2>
-      </div>
-
-      {isEditMode ? (
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <div className="px-5 py-4">
-            <div className="mb-6">
-              <textarea
-                {...register("memo")}
-                className="h-[280px] w-full resize-none rounded-md border border-gray-border px-4 py-4 text-base leading-relaxed text-gray-text focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
-                placeholder="기업에 대한 메모를 입력하세요"
-              />
-            </div>
-          </div>
-          <div className="flex items-center justify-end gap-3 px-5 py-5">
-            <Button
-              type="button"
-              onClick={handleCancel}
-              variant="outline"
-              disabled={updateMutation.isPending}
-            >
-              취소하기
-            </Button>
-            <Button
-              type="submit"
-              variant="secondary"
-              disabled={updateMutation.isPending}
-            >
-              저장하기
-            </Button>
-          </div>
-        </form>
-      ) : (
-        <div>
-          {isLoading ? (
-            <div className="flex items-center justify-center py-12">
-              <div className="text-gray-500">로딩 중...</div>
-            </div>
-          ) : (
-            <>
-              <div className="px-5 py-4">
-                <div className="mb-6">
-                  <div className="min-h-[200px] rounded-md border border-gray-border p-4">
-                    <p className="text-base leading-relaxed text-gray-text whitespace-pre-wrap">
-                      {data?.memo || "메모가 없습니다."}
-                    </p>
-                  </div>
-                </div>
-              </div>
-              <div className="flex items-center justify-end gap-3 px-5 py-5">
-                <Button
-                  onClick={handleEdit}
-                  variant="secondary"
-                  leftIcon={<Pencil className="h-5 w-5" />}
-                >
-                  수정하기
-                </Button>
-              </div>
-            </>
-          )}
-        </div>
-      )}
-    </div>
-  );
-}
-
 function FavoriteFormDialogContent({ payload, onClose }: DialogContentProps) {
   const handleSuccess = () => {
     onClose();
@@ -255,7 +105,7 @@ function FavoriteFormDialogContent({ payload, onClose }: DialogContentProps) {
       </div>
       <div className="px-5 py-4">
         <FavoriteForm
-          email={DEFAULT_EMAIL}
+          email={DEFAULT_USER_EMAIL}
           favoriteId={payload?.editingId}
           initialData={
             payload?.initialCompanyName

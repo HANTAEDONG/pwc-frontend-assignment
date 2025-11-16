@@ -27,4 +27,5 @@ export const pretendardJP = localFont({
   display: "swap",
   preload: true,
   fallback: ["-apple-system", "BlinkMacSystemFont", "system-ui", "sans-serif"],
+  adjustFontFallback: "Arial",
 });

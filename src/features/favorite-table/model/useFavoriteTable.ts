@@ -10,8 +10,7 @@ import type {
   FavoriteCompanyListItem,
   PaginatedFavoriteCompanyResponse,
 } from "@/entities/favorite/api";
-
-const DEFAULT_EMAIL = "htd0913@gmail.com";
+import { DEFAULT_USER_EMAIL } from "@/shared/config/user";
 
 export interface UseFavoriteTableOptions {
   searchQuery?: string;
@@ -58,8 +57,10 @@ export function useFavoriteTable({
   const searchQuery = externalSearchQuery ?? internalSearchQuery;
 
   const { data, isLoading, error, refetch } = useFavoriteCompaniesQuery(
-    { email: DEFAULT_EMAIL, page },
-    { enabled: !!DEFAULT_EMAIL }
+    { email: DEFAULT_USER_EMAIL, page },
+    {
+      staleTime: 5 * 60 * 1000,
+    }
   );
 
   const deleteMutation = useDeleteFavoriteCompany();
@@ -79,7 +80,7 @@ export function useFavoriteTable({
       try {
         await deleteMutation.mutateAsync({
           favorite_id: id,
-          email: DEFAULT_EMAIL,
+          email: DEFAULT_USER_EMAIL,
         });
       } catch {
         // 에러는 mutation에서 처리됨

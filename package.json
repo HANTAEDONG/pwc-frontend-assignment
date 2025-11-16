@@ -9,7 +9,8 @@
     "lint": "eslint .",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "jest --passWithNoTests",
-    "generate-corp-codes": "tsx scripts/generate-corp-codes.ts"
+    "corp:generate": "tsx scripts/generate-corp-codes.ts",
+    "corp:update": "tsx scripts/generate-corp-codes.ts"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.0.0",

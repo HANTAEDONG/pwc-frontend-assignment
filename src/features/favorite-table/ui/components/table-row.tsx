@@ -1,4 +1,4 @@
-import { ICONS } from "@/shared/ui/icons";
+import { Check, Trash } from "lucide-react";
 import { cn, formatDate } from "@/shared/lib/utils";
 
 import type { FavoriteCompanyListItem } from "@/entities/favorite/api";
@@ -56,19 +56,7 @@ export function TableRow({
             )}
           >
             {isChecked && (
-              <svg
-                className="h-3 w-3 text-current"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={3}
-                  d="M5 13l4 4L19 7"
-                />
-              </svg>
+              <Check className="h-3 w-3 text-current" strokeWidth={3} />
             )}
           </div>
         </label>
@@ -82,7 +70,7 @@ export function TableRow({
       >
         <button
           onClick={() => onCompanyClick?.(item.id)}
-          className="truncate font-sans font-normal text-sm leading-normal tracking-normal text-gray-900 align-middle text-left w-full hover:text-gray-600 transition-colors cursor-pointer"
+          className="truncate font-sans font-normal text-[16px] leading-normal tracking-normal text-gray-900 align-middle text-left w-full hover:text-gray-600 transition-colors cursor-pointer"
         >
           {item.company_name}
         </button>
@@ -94,7 +82,7 @@ export function TableRow({
           createdColumnClassName
         )}
       >
-        <span className="block whitespace-nowrap font-sans font-normal text-sm leading-normal tracking-normal text-gray-900 align-middle">
+        <span className="block whitespace-nowrap font-sans font-normal text-[16px] leading-normal tracking-normal text-gray-900 align-middle">
           {formatDate(item.created_at)}
         </span>
       </td>
@@ -110,7 +98,7 @@ export function TableRow({
           aria-label={`${item.company_name} 삭제`}
           disabled={isDeleting}
         >
-          {ICONS.trash1}
+          <Trash className="h-5 w-5" />
         </button>
       </td>
       <td

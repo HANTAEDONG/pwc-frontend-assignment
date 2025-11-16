@@ -1,14 +1,34 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   FavoriteSection,
   type FavoriteSectionRef,
 } from "@/widgets/favorite-section";
 import { FavoriteActions } from "@/widgets/favorite-section";
+import { favoriteQueryKeys } from "@/entities/favorite/queries";
+import { getFavoriteCompanies } from "@/entities/favorite/api";
+import { DEFAULT_USER_EMAIL } from "@/shared/config/user";
 
 export default function Page() {
   const sectionRef = useRef<FavoriteSectionRef>(null);
+  const searchParams = useSearchParams();
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    const page = parseInt(searchParams?.get("page") || "1", 10);
+    const prefetchData = async () => {
+      await queryClient.prefetchQuery({
+        queryKey: favoriteQueryKeys.list(DEFAULT_USER_EMAIL, page),
+        queryFn: () =>
+          getFavoriteCompanies({ email: DEFAULT_USER_EMAIL, page }),
+        staleTime: 5 * 60 * 1000,
+      });
+    };
+    prefetchData();
+  }, [queryClient, searchParams]);
 
   return (
     <div className="flex min-h-[780px] flex-col gap-6 px-4 sm:px-0">

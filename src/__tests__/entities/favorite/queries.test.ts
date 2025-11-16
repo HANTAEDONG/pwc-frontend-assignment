@@ -3,24 +3,25 @@ import {
   getFavoriteCompanies,
   getFavoriteCompanyDetail,
 } from "@/entities/favorite/api";
+import { DEFAULT_USER_EMAIL } from "@/shared/config/user";
 
 describe("관심 기업 쿼리", () => {
   describe("favoriteQueryKeys 쿼리 키", () => {
     it("올바른 쿼리 키를 생성해야 합니다.", () => {
       expect(favoriteQueryKeys.all).toEqual(["favorite"]);
       expect(favoriteQueryKeys.lists()).toEqual(["favorite", "list"]);
-      expect(favoriteQueryKeys.list("htd0913@gmail.com", 1)).toEqual([
+      expect(favoriteQueryKeys.list(DEFAULT_USER_EMAIL, 1)).toEqual([
         "favorite",
         "list",
-        "htd0913@gmail.com",
+        DEFAULT_USER_EMAIL,
         1,
       ]);
       expect(favoriteQueryKeys.details()).toEqual(["favorite", "detail"]);
-      expect(favoriteQueryKeys.detail(1, "htd0913@gmail.com")).toEqual([
+      expect(favoriteQueryKeys.detail(1, DEFAULT_USER_EMAIL)).toEqual([
         "favorite",
         "detail",
         1,
-        "htd0913@gmail.com",
+        DEFAULT_USER_EMAIL,
       ]);
     });
   });
@@ -28,7 +29,7 @@ describe("관심 기업 쿼리", () => {
   describe("getFavoriteCompanies API 호출", () => {
     it("getFavoriteCompanies 함수를 호출해야 합니다.", async () => {
       try {
-        await getFavoriteCompanies({ email: "htd0913@gmail.com", page: 1 });
+        await getFavoriteCompanies({ email: DEFAULT_USER_EMAIL, page: 1 });
       } catch (error) {
         expect(error).toBeDefined();
       }
@@ -40,7 +41,7 @@ describe("관심 기업 쿼리", () => {
       try {
         await getFavoriteCompanyDetail({
           favorite_id: 1,
-          email: "htd0913@gmail.com",
+          email: DEFAULT_USER_EMAIL,
         });
       } catch (error) {
         expect(error).toBeDefined();

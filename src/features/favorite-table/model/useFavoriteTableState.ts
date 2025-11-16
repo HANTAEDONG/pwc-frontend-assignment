@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import type { FavoriteCompanyListItem } from "@/entities/favorite/api";
 import type { UseDeleteFavoriteCompanyReturn } from "../model";
 import { useUiDialog } from "@/entities/ui";
+import { DEFAULT_USER_EMAIL } from "@/shared/config/user";
 
 interface UseFavoriteTableStateOptions {
   filteredItems: FavoriteCompanyListItem[];
@@ -75,7 +76,7 @@ export function useFavoriteTableState({
         try {
           await deleteMutation.mutateAsync({
             favorite_id: id,
-            email: "htd0913@gmail.com",
+            email: DEFAULT_USER_EMAIL,
           });
           setSelectedIds(new Set());
           setPendingDeleteIds([]);
@@ -94,7 +95,7 @@ export function useFavoriteTableState({
           for (const id of selectedArray) {
             await deleteMutation.mutateAsync({
               favorite_id: id,
-              email: "htd0913@gmail.com",
+              email: DEFAULT_USER_EMAIL,
             });
           }
           setSelectedIds(new Set());

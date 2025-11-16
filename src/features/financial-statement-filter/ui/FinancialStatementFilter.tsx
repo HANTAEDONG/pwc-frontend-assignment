@@ -1,24 +1,18 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { Controller } from "react-hook-form";
 import { Button, Select } from "@/shared/ui";
 import { FileScan, Loader2 } from "lucide-react";
 import { CompanySearchDropdown } from "@/features/company-search";
-import type { CompanySearchDropdownRef } from "@/features/company-search";
-import type { CompanyInfo } from "@/entities/company/api";
 import {
   BUSINESS_YEAR_OPTIONS,
   REPORT_NAME_OPTIONS,
   FS_DIV_OPTIONS,
 } from "@/entities/financial-statement";
-
-export interface FinancialStatementFilterParams {
-  corpCode: string;
-  corpName: string;
-  bsnsYear: string;
-  reprtCode: string;
-  fsDiv: string;
-}
+import {
+  useFinancialStatementFilter,
+  type FinancialStatementFilterParams,
+} from "../model/useFinancialStatementFilter";
 
 interface FinancialStatementFilterProps {
   onSubmit: (params: FinancialStatementFilterParams) => void;
@@ -33,35 +27,27 @@ export function FinancialStatementFilter({
   initialCorpName = "",
   disabled = false,
 }: FinancialStatementFilterProps) {
-  const [corpCode, setCorpCode] = useState(initialCorpCode);
-  const [corpName, setCorpName] = useState(initialCorpName);
-  const [bsnsYear, setBsnsYear] = useState("");
-  const [reprtCode, setReprtCode] = useState("");
-  const [fsDiv, setFsDiv] = useState("");
-  const dropdownRef = useRef<CompanySearchDropdownRef>(null);
+  const {
+    form,
+    dropdownRef,
+    isBusy,
+    companyNameError,
+    corpCodeError,
+    handleCompanySelect,
+    handleSubmit,
+  } = useFinancialStatementFilter({
+    onSubmit,
+    initialCorpCode,
+    initialCorpName,
+    disabled,
+  });
 
-  const isFormValid = corpName && bsnsYear && reprtCode && fsDiv;
-
-  const handleCompanySelect = (company: string | CompanyInfo) => {
-    // DART API를 사용하므로 CompanyInfo 타입만 전달됨
-    if (typeof company === "string") return;
-    setCorpName(company.corp_name);
-    setCorpCode(company.corp_code);
-    dropdownRef.current?.close();
-  };
-
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (!isFormValid) return;
-
-    onSubmit({
-      corpCode,
-      corpName,
-      bsnsYear,
-      reprtCode,
-      fsDiv,
-    });
-  };
+  const {
+    register,
+    control,
+    getValues,
+    formState: { errors },
+  } = form;
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
@@ -74,14 +60,34 @@ export function FinancialStatementFilter({
             <span className="text-red-500">*</span> 기업명
           </label>
           <div className="flex-1">
+            <input
+              type="hidden"
+              {...register("corpName", { required: "기업명을 입력해주세요" })}
+            />
+            <input
+              type="hidden"
+              {...register("corpCode", {
+                validate: (value) => {
+                  const name = getValues("corpName");
+                  if (!name) return true;
+                  return value ? true : "기업 코드가 유효하지 않습니다";
+                },
+              })}
+            />
             <CompanySearchDropdown
               ref={dropdownRef}
               onSelect={handleCompanySelect}
               placeholder="기업명을 입력해주세요"
-              hasError={false}
-              useDartApi={true}
-              disabled={disabled}
+              debounceMs={0}
+              hasError={!!companyNameError || !!corpCodeError}
+              disabled={isBusy}
             />
+            {companyNameError && (
+              <p className="mt-1 text-sm text-red-500">{companyNameError}</p>
+            )}
+            {corpCodeError && (
+              <p className="mt-1 text-sm text-red-500">{corpCodeError}</p>
+            )}
           </div>
         </div>
 
@@ -93,14 +99,26 @@ export function FinancialStatementFilter({
             <span className="text-red-500">*</span> 사업연도
           </label>
           <div className="flex-1">
-            <Select
-              id="bsns-year"
-              options={BUSINESS_YEAR_OPTIONS}
-              value={bsnsYear}
-              onChange={setBsnsYear}
-              placeholder="사업연도를 선택해주세요"
-              disabled={disabled}
+            <Controller
+              name="bsnsYear"
+              control={control}
+              rules={{ required: "사업연도를 선택해주세요" }}
+              render={({ field: { value, onChange } }) => (
+                <Select
+                  id="bsns-year"
+                  options={BUSINESS_YEAR_OPTIONS}
+                  value={value}
+                  onChange={onChange}
+                  placeholder="사업연도를 선택해주세요"
+                  disabled={isBusy}
+                />
+              )}
             />
+            {errors.bsnsYear && (
+              <p className="mt-1 text-sm text-red-500">
+                {errors.bsnsYear.message}
+              </p>
+            )}
           </div>
         </div>
 
@@ -112,14 +130,26 @@ export function FinancialStatementFilter({
             <span className="text-red-500">*</span> 보고서명
           </label>
           <div className="flex-1">
-            <Select
-              id="reprt-code"
-              options={REPORT_NAME_OPTIONS}
-              value={reprtCode}
-              onChange={setReprtCode}
-              placeholder="보고서명을 선택해주세요"
-              disabled={disabled}
+            <Controller
+              name="reprtCode"
+              control={control}
+              rules={{ required: "보고서명을 선택해주세요" }}
+              render={({ field: { value, onChange } }) => (
+                <Select
+                  id="reprt-code"
+                  options={REPORT_NAME_OPTIONS}
+                  value={value}
+                  onChange={onChange}
+                  placeholder="보고서명을 선택해주세요"
+                  disabled={isBusy}
+                />
+              )}
             />
+            {errors.reprtCode && (
+              <p className="mt-1 text-sm text-red-500">
+                {errors.reprtCode.message}
+              </p>
+            )}
           </div>
         </div>
 
@@ -131,14 +161,26 @@ export function FinancialStatementFilter({
             <span className="text-red-500">*</span> 재무제표
           </label>
           <div className="flex-1">
-            <Select
-              id="fs-div"
-              options={FS_DIV_OPTIONS}
-              value={fsDiv}
-              onChange={setFsDiv}
-              placeholder="재무제표 유형을 선택해주세요"
-              disabled={disabled}
+            <Controller
+              name="fsDiv"
+              control={control}
+              rules={{ required: "재무제표 유형을 선택해주세요" }}
+              render={({ field: { value, onChange } }) => (
+                <Select
+                  id="fs-div"
+                  options={FS_DIV_OPTIONS}
+                  value={value}
+                  onChange={onChange}
+                  placeholder="재무제표 유형을 선택해주세요"
+                  disabled={isBusy}
+                />
+              )}
             />
+            {errors.fsDiv && (
+              <p className="mt-1 text-sm text-red-500">
+                {errors.fsDiv.message}
+              </p>
+            )}
           </div>
         </div>
       </div>
@@ -146,14 +188,14 @@ export function FinancialStatementFilter({
       <div className="flex justify-center">
         <Button
           type="submit"
-          disabled={!isFormValid || disabled}
+          disabled={isBusy}
           className={`w-[176px] h-[38px] px-4 py-2 gap-2 rounded text-base font-medium ${
-            isFormValid && !disabled
+            !isBusy
               ? "bg-black text-white hover:bg-gray-800"
               : "bg-[#C4C4C4] text-[#3E3E3E] disabled:opacity-30 hover:bg-[#C4C4C4]"
           }`}
           leftIcon={
-            disabled ? (
+            isBusy ? (
               <Loader2 className="w-4 h-4 animate-spin" />
             ) : (
               <FileScan className="w-4 h-4" />
