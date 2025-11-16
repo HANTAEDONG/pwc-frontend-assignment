@@ -59,7 +59,9 @@ export function useFavoriteTable({
 
   const { data, isLoading, error, refetch } = useFavoriteCompaniesQuery(
     { email: DEFAULT_EMAIL, page },
-    { enabled: !!DEFAULT_EMAIL }
+    {
+      staleTime: 5 * 60 * 1000,
+    }
   );
 
   const deleteMutation = useDeleteFavoriteCompany();
