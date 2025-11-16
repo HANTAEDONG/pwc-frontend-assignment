@@ -8,6 +8,7 @@ import {
   LoadingState,
   ErrorState,
   EmptyState,
+  mapErrorToUiMessage,
 } from "./components/result-states";
 
 const FinancialStatementTable = lazy(() =>
@@ -54,11 +55,7 @@ export function FinancialStatementViewer() {
         {searchParams && isLoading && <LoadingState />}
         {searchParams && error && (
           <ErrorState
-            message={
-              error instanceof Error
-                ? error.message
-                : "재무제표 조회 중 오류가 발생했습니다."
-            }
+            message={mapErrorToUiMessage(error)}
             onRetry={() => refetch()}
           />
         )}

@@ -1,3 +1,4 @@
+import { memo, useMemo } from "react";
 import type { FinancialStatementRow } from "@/entities/financial-statement";
 import { REPORT_CODE_MAP } from "@/entities/financial-statement";
 
@@ -11,7 +12,7 @@ function formatAmount(amount: string): string {
   if (!amount || amount === "-" || amount.trim() === "") return "　";
   const num = parseFloat(amount);
   if (isNaN(num)) return "　";
-  // 백만원 단위로 변환 (원 단위 데이터를 백만원으로 나눔)
+
   const millionWon = num / 1000000;
   return new Intl.NumberFormat("ko-KR").format(millionWon);
 }
@@ -225,10 +226,12 @@ function SimpleTableRenderer({
             <th className="text-left border border-gray-500" style={thStyle}>
               　
             </th>
-            {periods.map((period) => (
+            {periods.map((period, idx) => (
               <th
                 key={period}
-                className="text-center border border-gray-500"
+                className={`text-center border border-gray-500 ${
+                  idx === periods.length - 1 ? "hidden sm:table-cell" : ""
+                }`}
                 style={thStyle}
               >
                 {period}
@@ -249,12 +252,14 @@ function SimpleTableRenderer({
                   {row.accountNm}
                   {row.accountDetail ? ` (${row.accountDetail})` : ""}
                 </td>
-                {periods.map((period) => {
+                {periods.map((period, idx) => {
                   const amount = getAmountForPeriod(row, period);
                   return (
                     <td
                       key={period}
-                      className="text-right border border-gray-500"
+                      className={`text-right border border-gray-500 ${
+                        idx === periods.length - 1 ? "hidden sm:table-cell" : ""
+                      }`}
                       style={tdStyle}
                     >
                       {formatAmount(amount)}
@@ -521,20 +526,12 @@ function CapitalTableRenderer({
   );
 }
 
-export function FinancialStatementTable({
+export const FinancialStatementTable = memo(function FinancialStatementTable({
   rows,
   reprtCode,
   bsnsYear,
 }: FinancialStatementTableProps) {
-  if (rows.length === 0) {
-    return (
-      <div className="text-center py-8 text-gray-500">
-        조회된 재무제표 데이터가 없습니다.
-      </div>
-    );
-  }
-
-  // sjDiv별로 그룹화
+  // sjDiv별로 그룹화 (메모화)
   const groupedBySjDiv = rows.reduce<Record<string, FinancialStatementRow[]>>(
     (acc, row) => {
       if (!acc[row.sjDiv]) {
@@ -546,116 +543,138 @@ export function FinancialStatementTable({
     {}
   );
 
-  // sjDiv 순서 정의
-  const sjDivOrder = ["BS", "IS", "CIS", "CF", "SCE"];
+  const sortedSjDivs = useMemo(() => {
+    const sjDivOrder = ["BS", "IS", "CIS", "CF", "SCE"];
+    return Object.keys(groupedBySjDiv).sort((a, b) => {
+      const indexA = sjDivOrder.indexOf(a);
+      const indexB = sjDivOrder.indexOf(b);
+      if (indexA === -1 && indexB === -1) return a.localeCompare(b);
+      if (indexA === -1) return 1;
+      if (indexB === -1) return -1;
+      return indexA - indexB;
+    });
+  }, [groupedBySjDiv]);
 
-  // 정렬된 sjDiv 목록
-  const sortedSjDivs = Object.keys(groupedBySjDiv).sort((a, b) => {
-    const indexA = sjDivOrder.indexOf(a);
-    const indexB = sjDivOrder.indexOf(b);
-    if (indexA === -1 && indexB === -1) return a.localeCompare(b);
-    if (indexA === -1) return 1;
-    if (indexB === -1) return -1;
-    return indexA - indexB;
-  });
+  // sjDiv 별로 정렬된 rows와 기간 컬럼을 사전 계산 (메모화)
+  const preparedBySjDiv = useMemo(() => {
+    const result: Record<
+      string,
+      { sortedRows: FinancialStatementRow[]; periodsOrdered: string[] }
+    > = {};
+    for (const sjDiv of Object.keys(groupedBySjDiv)) {
+      const filteredRows = groupedBySjDiv[sjDiv];
+      const sortedRows = [...filteredRows].sort((a, b) => {
+        const ordA = parseInt(a.ord) || 0;
+        const ordB = parseInt(b.ord) || 0;
+        return ordA - ordB;
+      });
+      const first = sortedRows[0];
+      const preferred = [
+        first?.thstrmNm,
+        first?.frmtrmNm,
+        first?.bfefrmtrmNm,
+      ].filter((p): p is string => !!p);
+      const periodsOrdered =
+        preferred.length > 0
+          ? preferred
+          : sortedRows.reduce<string[]>((acc, row) => {
+              const candidate = [
+                row.thstrmNm,
+                row.frmtrmNm,
+                row.bfefrmtrmNm,
+              ].filter((p): p is string => !!p);
+              candidate.forEach((p) => {
+                if (!acc.includes(p)) acc.push(p);
+              });
+              return acc;
+            }, []);
+      result[sjDiv] = { sortedRows, periodsOrdered };
+    }
+    return result;
+  }, [groupedBySjDiv]);
 
-  // 보고서명이 분기 보고서인지 확인
   const isQuarterlyReport =
     reprtCode === REPORT_CODE_MAP["1분기보고서"] ||
     reprtCode === REPORT_CODE_MAP["3분기보고서"];
 
   return (
     <div className="space-y-8">
-      {sortedSjDivs.map((sjDiv) => {
-        const filteredRows = groupedBySjDiv[sjDiv];
-        const sjNm = filteredRows[0]?.sjNm || "";
+      {rows.length === 0 && (
+        <div className="text-center py-8 text-gray-500">
+          조회된 재무제표 데이터가 없습니다.
+        </div>
+      )}
+      {rows.length > 0 &&
+        sortedSjDivs.map((sjDiv) => {
+          const { sortedRows, periodsOrdered } = preparedBySjDiv[sjDiv];
+          const sjNm = sortedRows[0]?.sjNm || "";
 
-        const sortedRows = [...filteredRows].sort((a, b) => {
-          const ordA = parseInt(a.ord) || 0;
-          const ordB = parseInt(b.ord) || 0;
-          return ordA - ordB;
-        });
+          const getAmountForPeriod = (
+            row: FinancialStatementRow,
+            period: string
+          ) => {
+            if (row.thstrmNm === period) return row.thstrmAmount;
+            if (row.frmtrmNm === period) return row.frmtrmAmount;
+            if (row.bfefrmtrmNm === period) return row.bfefrmtrmAmount;
+            return "-";
+          };
 
-        const uniquePeriods = sortedRows.reduce<string[]>((acc, row) => {
-          const periods = [row.thstrmNm, row.frmtrmNm, row.bfefrmtrmNm].filter(
-            (period): period is string => !!period
-          );
-
-          periods.forEach((period) => {
-            if (!acc.includes(period)) {
-              acc.push(period);
-            }
-          });
-
-          return acc;
-        }, []);
-
-        const getAmountForPeriod = (
-          row: FinancialStatementRow,
-          period: string
-        ) => {
-          if (row.thstrmNm === period) return row.thstrmAmount;
-          if (row.frmtrmNm === period) return row.frmtrmAmount;
-          if (row.bfefrmtrmNm === period) return row.bfefrmtrmAmount;
-          return "-";
-        };
-
-        // sjDiv에 따라 다른 렌더러 선택
-        if (sjDiv === "BS" || sjDiv === "CF") {
-          return (
-            <SimpleTableRenderer
-              key={sjDiv}
-              sjDiv={sjDiv}
-              sjNm={sjNm}
-              rows={sortedRows}
-              periods={uniquePeriods}
-              getAmountForPeriod={getAmountForPeriod}
-              bsnsYear={bsnsYear}
-              reprtCode={reprtCode}
-            />
-          );
-        } else if ((sjDiv === "IS" || sjDiv === "CIS") && isQuarterlyReport) {
-          return (
-            <QuarterlyTableRenderer
-              key={sjDiv}
-              sjDiv={sjDiv}
-              sjNm={sjNm}
-              rows={sortedRows}
-              periods={uniquePeriods}
-              getAmountForPeriod={getAmountForPeriod}
-              bsnsYear={bsnsYear}
-              reprtCode={reprtCode}
-            />
-          );
-        } else if (sjDiv === "SCE") {
-          return (
-            <CapitalTableRenderer
-              key={sjDiv}
-              sjDiv={sjDiv}
-              sjNm={sjNm}
-              rows={sortedRows}
-              periods={uniquePeriods}
-              getAmountForPeriod={getAmountForPeriod}
-              bsnsYear={bsnsYear}
-              reprtCode={reprtCode}
-            />
-          );
-        } else {
-          // 기본 렌더러 (IS, CIS - 반기/사업보고서)
-          return (
-            <SimpleTableRenderer
-              key={sjDiv}
-              sjDiv={sjDiv}
-              sjNm={sjNm}
-              rows={sortedRows}
-              periods={uniquePeriods}
-              getAmountForPeriod={getAmountForPeriod}
-              bsnsYear={bsnsYear}
-              reprtCode={reprtCode}
-            />
-          );
-        }
-      })}
+          // sjDiv에 따라 다른 렌더러 선택
+          if (sjDiv === "BS" || sjDiv === "CF") {
+            return (
+              <SimpleTableRenderer
+                key={sjDiv}
+                sjDiv={sjDiv}
+                sjNm={sjNm}
+                rows={sortedRows}
+                periods={periodsOrdered}
+                getAmountForPeriod={getAmountForPeriod}
+                bsnsYear={bsnsYear}
+                reprtCode={reprtCode}
+              />
+            );
+          } else if ((sjDiv === "IS" || sjDiv === "CIS") && isQuarterlyReport) {
+            return (
+              <QuarterlyTableRenderer
+                key={sjDiv}
+                sjDiv={sjDiv}
+                sjNm={sjNm}
+                rows={sortedRows}
+                periods={periodsOrdered}
+                getAmountForPeriod={getAmountForPeriod}
+                bsnsYear={bsnsYear}
+                reprtCode={reprtCode}
+              />
+            );
+          } else if (sjDiv === "SCE") {
+            return (
+              <CapitalTableRenderer
+                key={sjDiv}
+                sjDiv={sjDiv}
+                sjNm={sjNm}
+                rows={sortedRows}
+                periods={periodsOrdered}
+                getAmountForPeriod={getAmountForPeriod}
+                bsnsYear={bsnsYear}
+                reprtCode={reprtCode}
+              />
+            );
+          } else {
+            // 기본 렌더러 (IS, CIS - 반기/사업보고서)
+            return (
+              <SimpleTableRenderer
+                key={sjDiv}
+                sjDiv={sjDiv}
+                sjNm={sjNm}
+                rows={sortedRows}
+                periods={periodsOrdered}
+                getAmountForPeriod={getAmountForPeriod}
+                bsnsYear={bsnsYear}
+                reprtCode={reprtCode}
+              />
+            );
+          }
+        })}
     </div>
   );
-}
+});
