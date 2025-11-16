@@ -295,10 +295,11 @@ function QuarterlyTableRenderer({
 
   // periods를 그룹화: 분기 보고서인 경우 각 기간에 대해 [3개월, 누적] 2개 서브 컬럼 생성
   const periodGroups: Array<{ main: string; sub: Array<"3개월" | "누적"> }> =
-    periods.map((p) =>
-      p.includes("분기")
-        ? { main: p, sub: ["3개월", "누적"] }
-        : { main: p, sub: ["3개월", "누적"] } // 손익/포괄손익은 분기/반기에 상관없이 3개월/누적 구조를 유지
+    periods.map(
+      (p) =>
+        p.includes("분기")
+          ? { main: p, sub: ["3개월", "누적"] }
+          : { main: p, sub: ["3개월", "누적"] } // 손익/포괄손익은 분기/반기에 상관없이 3개월/누적 구조를 유지
     );
 
   function getQuarterlyAmounts(
