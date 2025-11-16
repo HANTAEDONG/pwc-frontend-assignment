@@ -1,6 +1,6 @@
 "use client";
 
-import { useImperativeHandle, forwardRef } from "react";
+import { useImperativeHandle, forwardRef, useEffect, useRef } from "react";
 import { useFavoriteTable, useFavoriteTableState } from "../model";
 import { TableContainer } from "./components/table-container";
 import { TableHeader } from "./components/table-header";
@@ -16,6 +16,7 @@ export interface FavoriteTableProps {
 export interface FavoriteTableRef {
   getSelectedIds: () => number[];
   deleteSelected: () => void;
+  subscribeSelectionChange: (listener: (count: number) => void) => () => void;
 }
 
 export const FavoriteTable = forwardRef<FavoriteTableRef, FavoriteTableProps>(
@@ -55,9 +56,24 @@ export const FavoriteTable = forwardRef<FavoriteTableRef, FavoriteTableProps>(
       data,
     });
 
+    const selectionListenersRef = useRef(
+      new Set<(count: number) => void>()
+    );
+
+    useEffect(() => {
+      const count = selectedIds.size;
+      selectionListenersRef.current.forEach((listener) => listener(count));
+    }, [selectedIds]);
+
     useImperativeHandle(ref, () => ({
       getSelectedIds,
       deleteSelected: handleDeleteSelected,
+      subscribeSelectionChange: (listener: (count: number) => void) => {
+        selectionListenersRef.current.add(listener);
+        return () => {
+          selectionListenersRef.current.delete(listener);
+        };
+      },
     }));
 
     return (
