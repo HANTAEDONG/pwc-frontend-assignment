@@ -86,7 +86,7 @@ export function FinancialStatementFilter({
               ref={dropdownRef}
               onSelect={handleCompanySelect}
               placeholder="기업을 검색해주세요"
-              debounceMs={0}
+              debounceMs={250}
               hasError={!!companyNameError || !!corpCodeError}
               disabled={isBusy}
             />
