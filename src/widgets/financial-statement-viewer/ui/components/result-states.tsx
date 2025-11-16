@@ -1,5 +1,6 @@
 import { Button } from "@/shared/ui";
 import { isAppError } from "@/shared/api/AppError";
+import { Annoyed } from "lucide-react";
 import { Box } from "lucide-react";
 
 interface LoadingStateProps {
@@ -28,22 +29,12 @@ export function ErrorState({
 }: ErrorStateProps) {
   return (
     <div className="flex flex-col items-center justify-center py-16">
-      <div className="mb-4 text-danger">
-        <svg
-          className="h-12 w-12"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-          />
-        </svg>
+      <div className="mb-4 text-black">
+        <Annoyed className="w-[65px] h-[65px]" />
       </div>
-      <p className="text-gray-600 mb-4">{message}</p>
+      <div className="text-gray-600 mb-4 whitespace-pre-line text-center">
+        {message}
+      </div>
       {onRetry && (
         <Button onClick={onRetry} variant="outline">
           재시도
@@ -55,7 +46,6 @@ export function ErrorState({
 
 export function mapErrorToUiMessage(error: unknown): string {
   if (isAppError(error)) {
-    // 네트워크/권한/검증/기타 HTTP 코드에 따른 사용자 메시지 매핑
     if (error.code === "NETWORK_ERROR") {
       return "네트워크 오류가 발생했습니다. 연결을 확인한 뒤 다시 시도해주세요.";
     }
