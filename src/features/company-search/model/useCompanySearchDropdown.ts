@@ -31,6 +31,7 @@ export interface UseCompanySearchDropdownReturn {
   handleKeyDown: (e: KeyboardEvent) => void;
   handleFocus: () => void;
   close: () => void;
+  clear: () => void;
 }
 
 export function useCompanySearchDropdown({
@@ -73,14 +74,23 @@ export function useCompanySearchDropdown({
     error,
   } = useQuery({
     queryKey: ["company", "list", useRemoteApi ? "remote" : "local"],
-    enabled: !!keyword && keyword.length > 0,
+    enabled: !!keyword && keyword.length >= 2,
     queryFn: () => (useRemoteApi ? getCompaniesRemote() : getCompanies()),
   });
 
   const filteredCompanies = useMemo(() => {
     const list = internalCompanies ?? [];
     const keywordLower = keyword.toLowerCase();
-    return list.filter((name) => name.toLowerCase().includes(keywordLower));
+    if (keywordLower.length < 2) return [];
+    const result: string[] = [];
+    for (let i = 0; i < list.length; i++) {
+      const name = list[i];
+      if (name.toLowerCase().includes(keywordLower)) {
+        result.push(name);
+        if (result.length >= 50) break;
+      }
+    }
+    return result;
   }, [internalCompanies, keyword]);
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -179,5 +189,9 @@ export function useCompanySearchDropdown({
     handleKeyDown,
     handleFocus,
     close,
+    clear: () => {
+      setSelectedCompany(null);
+      setInputValue("");
+    },
   };
 }

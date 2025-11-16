@@ -55,6 +55,7 @@ export const CompanySearchDropdown = forwardRef<
       handleKeyDown,
       handleFocus,
       close,
+      clear,
     }: UseCompanySearchDropdownReturn = useCompanySearchDropdown({
       onSelect,
       useDart,
@@ -64,16 +65,26 @@ export const CompanySearchDropdown = forwardRef<
     });
 
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [pendingCompany, setPendingCompany] = useState<string | null>(null);
 
     const handleSearchIconClick = () => {
+      setPendingCompany(null);
       setIsModalOpen(true);
     };
 
     const handleSelectAndClose = (company: string) => {
       handleSelect(company);
       setIsModalOpen(false);
+      setPendingCompany(null);
     };
 
+    const handleModalClose = () => {
+      if (useModal) {
+        clear();
+      }
+      setIsModalOpen(false);
+      setPendingCompany(null);
+    };
     useImperativeHandle(ref, () => ({
       close,
     }));
@@ -96,6 +107,7 @@ export const CompanySearchDropdown = forwardRef<
           onSearchIconClick={handleSearchIconClick}
           onInputClick={useModal ? handleSearchIconClick : undefined}
           rightIcon={useModal ? "search" : "chevron"}
+          hoverPointer={useModal}
         />
         {shouldShowDropdown && (
           <DropdownContent
@@ -111,7 +123,7 @@ export const CompanySearchDropdown = forwardRef<
         {useModal && (
           <Modal
             isOpen={isModalOpen}
-            onClose={() => setIsModalOpen(false)}
+            onClose={handleModalClose}
             maxWidth="1000px"
           >
             <div>
@@ -120,7 +132,7 @@ export const CompanySearchDropdown = forwardRef<
                   기업명 검색
                 </h2>
                 <Button
-                  onClick={() => setIsModalOpen(false)}
+                  onClick={handleModalClose}
                   variant="ghost"
                   className="h-auto w-auto flex-shrink-0 p-0 text-gray-900 hover:text-gray-700"
                   aria-label="닫기"
@@ -158,10 +170,25 @@ export const CompanySearchDropdown = forwardRef<
                     filteredCompanies={filteredCompanies}
                     selectedIndex={selectedIndex}
                     itemRefs={itemRefs}
-                    onSelect={handleSelectAndClose}
+                    onSelect={(company) => setPendingCompany(company)}
                     listRef={listRef}
                     variant="static"
                   />
+                </div>
+                <div className="flex justify-end gap-2 pt-2">
+                  <Button variant="outline" onClick={handleModalClose}>
+                    취소
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    onClick={() =>
+                      pendingCompany && handleSelectAndClose(pendingCompany)
+                    }
+                    disabled={!pendingCompany}
+                    aria-disabled={!pendingCompany}
+                  >
+                    선택하기
+                  </Button>
                 </div>
               </div>
             </div>

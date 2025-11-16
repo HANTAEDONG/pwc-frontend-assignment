@@ -15,6 +15,7 @@ interface SearchInputProps {
   onSearchIconClick: () => void;
   onInputClick?: () => void;
   rightIcon?: "search" | "chevron";
+  hoverPointer?: boolean;
 }
 
 export function SearchInput({
@@ -30,6 +31,7 @@ export function SearchInput({
   onSearchIconClick,
   onInputClick,
   rightIcon = "search",
+  hoverPointer = false,
 }: SearchInputProps) {
   return (
     <div className="relative">
@@ -53,7 +55,8 @@ export function SearchInput({
             : isOpen
             ? "border-primary"
             : "border-gray-border",
-          disabled && "cursor-not-allowed bg-gray-50 text-gray-border"
+          disabled && "cursor-not-allowed bg-gray-50 text-gray-border",
+          hoverPointer && "hover:cursor-pointer"
         )}
       />
       {rightIcon === "search" ? (
